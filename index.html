@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Region-locked image editing (A2 prototype)</title>
+  <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+  <header>
+    <h1>Region-locked image editing</h1>
+    <p class="sub">A2 prototype: change one part of an image without touching the rest.</p>
+    <ol class="steps" id="steps">
+      <li data-step="select" class="active">1. Paint the editable area</li>
+      <li data-step="confirm">2. Check the edit card</li>
+      <li data-step="result">3. Review the result</li>
+    </ol>
+  </header>
+
+  <main>
+    <section class="stage">
+      <div class="toolbar">
+        <label for="sample">Image</label>
+        <select id="sample"></select>
+        <span id="imgInfo" class="muted"></span>
+      </div>
+      <div class="canvasWrap">
+        <canvas id="imageCanvas" aria-label="Image being edited"></canvas>
+      </div>
+      <p id="loadMsg" class="muted">Loading sample images...</p>
+    </section>
+
+    <aside class="panel">
+      <h2>Instruction</h2>
+      <textarea id="instruction" rows="3" placeholder="e.g. make the door red" disabled></textarea>
+      <button id="makeCard" disabled>Make edit card</button>
+      <p class="status planned">Not built yet: instruction and edit card (next step).</p>
+
+      <h2>Edit card</h2>
+      <div id="card" class="card empty">No card yet.</div>
+
+      <h2>Status key</h2>
+      <ul class="legend">
+        <li><span class="dot implemented"></span>implemented</li>
+        <li><span class="dot simulated"></span>simulated (pre-recorded mock)</li>
+        <li><span class="dot planned"></span>planned</li>
+      </ul>
+    </aside>
+  </main>
+
+  <script src="static/samples.js"></script>
+  <script src="static/app.js"></script>
+</body>
+</html>
