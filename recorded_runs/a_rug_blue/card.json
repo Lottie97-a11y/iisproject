@@ -1,0 +1,12 @@
+{
+  "id": "a_rug_blue",
+  "title": "A: normal edit",
+  "sample": "room.png",
+  "status": "simulated",
+  "source": "drawn in code by tools/make_mocks.py, no model called",
+  "instruction": "make only the rug blue, keep everything else unchanged",
+  "target": "the rug",
+  "change": "colour: red to blue",
+  "keep": "everything outside the painted area (cat, table, vase, roses, window, wall, floor)",
+  "unclear": []
+}

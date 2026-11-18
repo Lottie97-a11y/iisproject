@@ -1,0 +1,15 @@
+{
+  "id": "c_roses_vague",
+  "title": "C: vague instruction",
+  "sample": "room.png",
+  "status": "simulated",
+  "source": "drawn in code by tools/make_mocks.py, no model called",
+  "instruction": "make it brighter",
+  "target": "the roses (the area you painted)",
+  "change": "brightness: lighter, more vivid petals",
+  "keep": "everything outside the painted area (cat, table, vase, roses, window, wall, floor)",
+  "unclear": [
+    "'it' could mean the roses, the vase or the whole room; the card assumes the painted roses",
+    "'brighter' could mean a lighter colour or more light in the room; the card assumes lighter petals"
+  ]
+}

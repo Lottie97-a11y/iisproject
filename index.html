@@ -24,20 +24,56 @@
         <select id="sample"></select>
         <span id="imgInfo" class="muted"></span>
       </div>
-      <div class="canvasWrap">
-        <canvas id="imageCanvas" aria-label="Image being edited"></canvas>
+
+      <div class="toolbar" id="brushBar">
+        <label for="brushSize">Brush</label>
+        <input type="range" id="brushSize" min="6" max="80" value="24">
+        <span id="brushSizeLabel" class="muted">24 px</span>
+        <button type="button" id="modePaint" class="small toggle on" aria-pressed="true">Paint</button>
+        <button type="button" id="modeErase" class="small toggle" aria-pressed="false">Erase</button>
+        <button type="button" id="clearMask" class="small secondary">Clear</button>
+        <label class="check"><input type="checkbox" id="showLocked"> Show locked area</label>
       </div>
+
+      <div class="canvasWrap">
+        <div class="canvasStack" id="canvasStack">
+          <canvas id="imageCanvas" aria-label="Image being edited"></canvas>
+          <canvas id="overlayCanvas" aria-label="Paint here to mark the area that may change"></canvas>
+        </div>
+      </div>
+      <p class="muted" id="maskInfo">Paint over the part you want to change. Anything you do not paint stays locked.</p>
       <p id="loadMsg" class="muted">Loading sample images...</p>
+      <p class="status implemented">Implemented: mask painting (painted area in blue), optional grey view of the locked area.</p>
     </section>
 
     <aside class="panel">
-      <h2>Instruction</h2>
-      <textarea id="instruction" rows="3" placeholder="e.g. make the door red" disabled></textarea>
-      <button id="makeCard" disabled>Make edit card</button>
-      <p class="status planned">Not built yet: instruction and edit card (next step).</p>
+      <section id="selectPanel">
+        <h2>Scenario</h2>
+        <select id="scenario"></select>
+        <button type="button" id="useScenarioMask" class="small secondary">Use this scenario's mask</button>
+        <p class="status simulated">Simulated: each scenario has a pre-recorded edit card and result. No model is called.</p>
 
-      <h2>Edit card</h2>
-      <div id="card" class="card empty">No card yet.</div>
+        <h2>Instruction</h2>
+        <textarea id="instruction" rows="3"></textarea>
+        <button type="button" id="makeCard">Make edit card</button>
+        <p id="selectMsg" class="warn" role="alert"></p>
+      </section>
+
+      <section id="confirmPanel" hidden>
+        <h2>Edit card <span class="badge simulated">simulated</span></h2>
+        <div id="card" class="card"></div>
+        <p class="muted">Nothing runs until you confirm.</p>
+        <div class="row">
+          <button type="button" id="confirmBtn">Confirm and run</button>
+          <button type="button" id="backBtn" class="secondary">Go back and edit</button>
+        </div>
+      </section>
+
+      <section id="resultPanel" hidden>
+        <h2>Result</h2>
+        <p class="status planned">Planned (17 Nov): show the pre-recorded result, paste the locked pixels back and report any drift.</p>
+        <button type="button" id="restartBtn" class="secondary">Start a new edit</button>
+      </section>
 
       <h2>Status key</h2>
       <ul class="legend">
@@ -49,6 +85,7 @@
   </main>
 
   <script src="static/samples.js"></script>
+  <script src="static/recorded_runs.js"></script>
   <script src="static/app.js"></script>
 </body>
 </html>
