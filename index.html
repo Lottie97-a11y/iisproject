@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Region-locked image editing (A2 prototype)</title>
-  <link rel="stylesheet" href="static/style.css">
+  <link rel="stylesheet" href="static/style.css?v=20261119b">
 </head>
 <body>
   <header>
@@ -43,7 +43,7 @@
       </div>
       <p class="muted" id="maskInfo">Paint over the part you want to change. Anything you do not paint stays locked.</p>
       <p id="loadMsg" class="muted">Loading sample images...</p>
-      <p class="status implemented">Implemented: mask painting (painted area in blue), optional grey view of the locked area.</p>
+      <p class="status implemented">Implemented: mask painting (painted area in blue), optional dark view of the locked area (painted area in its true colours).</p>
     </section>
 
     <aside class="panel">
@@ -70,9 +70,24 @@
       </section>
 
       <section id="resultPanel" hidden>
-        <h2>Result</h2>
-        <p class="status planned">Planned (17 Nov): show the pre-recorded result, paste the locked pixels back and report any drift.</p>
-        <button type="button" id="restartBtn" class="secondary">Start a new edit</button>
+        <h2>Result <span class="badge simulated">simulated output</span></h2>
+        <div id="driftReport" class="report" role="status"></div>
+        <fieldset class="views">
+          <legend>Show</legend>
+          <label><input type="radio" name="view" value="final" checked> Final (locked areas restored)</label>
+          <label><input type="radio" name="view" value="raw"> Model output, before restoring</label>
+          <label><input type="radio" name="view" value="original"> Original</label>
+        </fieldset>
+        <label class="check"><input type="checkbox" id="showDrift" checked> Outline blocked changes in red</label>
+        <div class="row">
+          <button type="button" id="keepBtn">Keep this result</button>
+          <button type="button" id="undoBtn" class="secondary">Back to original</button>
+        </div>
+        <p id="resultMsg" class="muted"></p>
+        <button type="button" id="restartBtn" class="secondary small">Start a new edit</button>
+        <p class="status implemented">Implemented: outside the painted area the original pixels are pasted back, and blocked changes are counted and highlighted.</p>
+        <p class="status simulated">Simulated: the model output is pre-recorded.</p>
+        <p class="status planned">Planned: version history for kept results.</p>
       </section>
 
       <h2>Status key</h2>
@@ -84,8 +99,8 @@
     </aside>
   </main>
 
-  <script src="static/samples.js"></script>
-  <script src="static/recorded_runs.js"></script>
-  <script src="static/app.js"></script>
+  <script src="static/samples.js?v=20261119b"></script>
+  <script src="static/recorded_runs.js?v=20261119b"></script>
+  <script src="static/app.js?v=20261119b"></script>
 </body>
 </html>
