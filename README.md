@@ -1,6 +1,6 @@
 # Region-locked image editing (IIS A2 prototype)
 
-Prose word count: 856 (code and commands not counted)
+Prose word count: 902 (code and commands not counted)
 
 When people use text prompts to edit part of an AI-generated image, the model can change other parts they wanted to keep. Building on my A1 literature review, this browser prototype explores letting users lock those areas so the system preserves them during editing.
 
@@ -16,7 +16,7 @@ Live page: https://lottie97-a11y.github.io/iisproject/
 | Edit card text, fixed per scenario | simulated |
 | Three model results, drawn in code | simulated |
 | Pasting the original pixels back outside the painted area after generation | implemented |
-| Counting and outlining blocked changes; switching between final, model output and original | implemented |
+| Counting blocked changes; outlining every change in red; switching between final, model output and original | implemented |
 | Keep the result / back to the original image | implemented |
 | Version history of kept results | planned |
 | Live image model | not in scope |
@@ -50,8 +50,9 @@ The first two changes are in commit [4407188](https://github.com/Lottie97-a11y/i
 - **17 Nov – Mask painting, edit card, confirm / go back.** Why: the user, not the model, decides what may change, and nothing runs until they have checked the card. Checked: the brush, brush size, erase and clear worked; the card showed the planned edit before anything ran; painting and the instruction box were locked while it was shown; "Go back" kept my mask; the result step opened only after Confirm; and scenario C's card showed the yellow "instruction is unclear" box.
 - **18 Nov – Room scene (rug, cat, table, vase of roses).** Why: it is more complex and matches my storyboards and Lab 3 tests, where recolouring the rug also changed the cat and the vase. The three mocks were redrawn to match. Checked: the house sample had worked before I replaced it, and the three room mocks looked right (rug only; rug plus a grey cat and a missing vase; brighter roses).
 - **18 Nov – Whole image visible by default.** Greying out every unpainted area darkened the picture and made it hard to judge, so painted areas are now tinted blue and the grey view is optional. Unpainted areas stay locked. Checked: the page opens with no grey overlay and marks only what I paint.
-- **18 Nov – Result step: lock enforced after generation.** Outside the painted area the original pixels are pasted back, whatever the model returned; changed pixels there are counted, reported and outlined in red, and "Back to original" undoes the edit. Why: the lock must not depend on the model obeying. Checked: TODO.
+- **18 Nov – Result step: lock enforced after generation.** Outside the painted area the original pixels are pasted back, whatever the model returned; changed pixels there are counted and reported, every change the model made is outlined in red, and "Back to original" undoes the edit. Why: the lock must not depend on the model obeying. Checked: TODO.
 - **19 Nov – Clearer locked view.** When I ticked "Show locked area", the grey was too light, and the blue tint on top turned the painted rug purple, so I could not see its true colours. I asked for a darker grey and for the painted area to keep its original colours in this view. Checked: on my computer, the painted area kept its original colours while the locked areas were darkened.
+- **19 Nov – Outline every change.** At first only the blocked changes were outlined, so the allowed edit (the rug) was not marked. I asked for every change the model made to be circled in red. Checked: TODO.
 
 ## AI assistance
 

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Region-locked image editing (A2 prototype)</title>
-  <link rel="stylesheet" href="static/style.css?v=20261119b">
+  <link rel="stylesheet" href="static/style.css?v=20261119c">
 </head>
 <body>
   <header>
@@ -78,14 +78,14 @@
           <label><input type="radio" name="view" value="raw"> Model output, before restoring</label>
           <label><input type="radio" name="view" value="original"> Original</label>
         </fieldset>
-        <label class="check"><input type="checkbox" id="showDrift" checked> Outline blocked changes in red</label>
+        <label class="check"><input type="checkbox" id="showDrift" checked> Outline every change in red</label>
         <div class="row">
           <button type="button" id="keepBtn">Keep this result</button>
           <button type="button" id="undoBtn" class="secondary">Back to original</button>
         </div>
         <p id="resultMsg" class="muted"></p>
         <button type="button" id="restartBtn" class="secondary small">Start a new edit</button>
-        <p class="status implemented">Implemented: outside the painted area the original pixels are pasted back, and blocked changes are counted and highlighted.</p>
+        <p class="status implemented">Implemented: outside the painted area the original pixels are pasted back, blocked changes are counted, and every change is outlined in red.</p>
         <p class="status simulated">Simulated: the model output is pre-recorded.</p>
         <p class="status planned">Planned: version history for kept results.</p>
       </section>
@@ -99,8 +99,8 @@
     </aside>
   </main>
 
-  <script src="static/samples.js?v=20261119b"></script>
-  <script src="static/recorded_runs.js?v=20261119b"></script>
-  <script src="static/app.js?v=20261119b"></script>
+  <script src="static/samples.js?v=20261119c"></script>
+  <script src="static/recorded_runs.js?v=20261119c"></script>
+  <script src="static/app.js?v=20261119c"></script>
 </body>
 </html>

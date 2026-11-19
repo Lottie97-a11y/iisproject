@@ -8,7 +8,8 @@
 // Step 3 (result):  reached only from the Confirm button. The pre-recorded model output is
 //                   loaded; outside the painted area the original pixels are pasted back,
 //                   so the lock holds even when the model changes too much. Pixels the
-//                   model changed in the locked area are counted and highlighted in red.
+//                   model changed in the locked area are counted and reported; every
+//                   change the model made (allowed or blocked) is outlined in red.
 //                   "Back to original" returns to step 1 with the mask kept.
 //
 // Simulated parts: the edit card text and the result come from static/recorded_runs.js
@@ -156,7 +157,7 @@ function renderOverlay() {
   ovCtx.clearRect(0, 0, width, height);
   ovCtx.globalCompositeOperation = "source-over";
   if (state.step === "result") {
-    // Result view: only the outline of the blocked changes, in red, when asked for.
+    // Result view: the red outline of every change the model made, when asked for.
     if (state.outcome && $("showDrift").checked && viewName() !== "original") {
       ovCtx.drawImage(state.outcome.driftLayer, 0, 0);
     }
@@ -357,12 +358,15 @@ function enforceLock(raw) {
   const mask = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height).data;
   const final = new ImageData(new Uint8ClampedArray(out), raw.width, raw.height);
   const drift = new ImageData(raw.width, raw.height);
-  const blocked = new Uint8Array(raw.width * raw.height);
+  const blocked = new Uint8Array(raw.width * raw.height); // every pixel the model changed
   let driftCount = 0, editedCount = 0, lockedCount = 0;
   for (let i = 0; i < out.length; i += 4) {
     const changed = out[i] !== orig[i] || out[i + 1] !== orig[i + 1] || out[i + 2] !== orig[i + 2];
     if (mask[i + 3] > 0) {
-      if (changed) editedCount++;
+      if (changed) {
+        editedCount++;
+        blocked[i / 4] = 1; // outlined too: every change the model made is circled in red
+      }
       continue;
     }
     lockedCount++;
@@ -372,7 +376,7 @@ function enforceLock(raw) {
     }
     final.data[i] = orig[i]; final.data[i + 1] = orig[i + 1]; final.data[i + 2] = orig[i + 2]; final.data[i + 3] = orig[i + 3];
   }
-  // Outline the blocked regions in red, so colours inside stay true in every view.
+  // Outline every changed region in red (allowed and blocked), so colours inside stay true.
   const w = raw.width, h = raw.height;
   const r = OUTLINE_RADIUS;
   for (let y = 0; y < h; y++) {
