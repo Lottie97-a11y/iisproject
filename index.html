@@ -4,15 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Region-locked image editing (A2 prototype)</title>
-  <link rel="stylesheet" href="static/style.css?v=20261119c">
+  <link rel="stylesheet" href="static/style.css?v=20261121h">
 </head>
 <body>
   <header>
     <h1>Region-locked image editing</h1>
     <p class="sub">A2 prototype: change one part of an image without touching the rest.</p>
     <ol class="steps" id="steps">
-      <li data-step="select" class="active">1. Paint the editable area</li>
-      <li data-step="confirm">2. Check the edit card</li>
+      <li data-step="select" class="active">1. Paint and describe the edit</li>
+      <li data-step="confirm">2. Choose a mode and check the edit card</li>
       <li data-step="result">3. Review the result</li>
     </ol>
   </header>
@@ -32,34 +32,45 @@
         <button type="button" id="modePaint" class="small toggle on" aria-pressed="true">Paint</button>
         <button type="button" id="modeErase" class="small toggle" aria-pressed="false">Erase</button>
         <button type="button" id="clearMask" class="small secondary">Clear</button>
-        <label class="check"><input type="checkbox" id="showLocked"> Show locked area</label>
+        <label class="check"><input type="checkbox" id="showLocked"> Dim outside brush strokes</label>
       </div>
 
       <div class="canvasWrap">
         <div class="canvasStack" id="canvasStack">
           <canvas id="imageCanvas" aria-label="Image being edited"></canvas>
-          <canvas id="overlayCanvas" aria-label="Paint here to mark the area that may change"></canvas>
+          <canvas id="overlayCanvas" aria-label="Brush over the image to make a selection"></canvas>
         </div>
       </div>
-      <p class="muted" id="maskInfo">Paint over the part you want to change. Anything you do not paint stays locked.</p>
+      <p class="muted" id="maskInfo">Brush over the image to make a selection.</p>
       <p id="loadMsg" class="muted">Loading sample images...</p>
-      <p class="status implemented">Implemented: mask painting (painted area in blue), optional dark view of the locked area (painted area in its true colours).</p>
+      <p class="status implemented">Implemented: mask painting (painted area in blue), optional dimming outside the brush strokes.</p>
     </section>
 
     <aside class="panel">
       <section id="selectPanel">
-        <h2>Scenario</h2>
-        <select id="scenario"></select>
-        <button type="button" id="useScenarioMask" class="small secondary">Use this scenario's mask</button>
-        <p class="status simulated">Simulated: each scenario has a pre-recorded edit card and result. No model is called.</p>
+        <h2><label for="instruction">Describe your edit</label></h2>
+        <textarea id="instruction" rows="3" placeholder="e.g. make the rug blue" aria-describedby="inputGuide"></textarea>
+        <p id="inputGuide" class="muted" role="status">Enter an instruction and paint the area you want to change.</p>
+        <p id="countRule" class="rule-note">An object counts as painted only if you painted at least 40 pixels of it, or 500 pixels of the background.
+          <span id="countClasses"></span></p>
 
-        <h2>Instruction</h2>
-        <textarea id="instruction" rows="3"></textarea>
-        <button type="button" id="makeCard">Make edit card</button>
+        <p class="status simulated">Simulated: your words are read by keyword rules and the edit is drawn by code. No AI model is called.</p>
+
+        <button type="button" id="makeCard" disabled>Next: choose a mode</button>
         <p id="selectMsg" class="warn" role="alert"></p>
       </section>
 
       <section id="confirmPanel" hidden>
+        <div id="modeAdvice" class="advice" role="status" hidden></div>
+        <h2><label for="editMode">Choose a mode</label></h2>
+        <select id="editMode" aria-describedby="modeHelp" disabled>
+          <option value="" selected disabled>Select a mode</option>
+          <option value="A">A: whole objects you touch</option>
+          <option value="B">B: named objects, painted part only</option>
+          <option value="C">C: everything you paint</option>
+        </select>
+        <p id="modeHelp" class="muted"></p>
+
         <h2>Edit card <span class="badge simulated">simulated</span></h2>
         <div id="card" class="card"></div>
         <p class="muted">Nothing runs until you confirm.</p>
@@ -78,29 +89,30 @@
           <label><input type="radio" name="view" value="raw"> Model output, before restoring</label>
           <label><input type="radio" name="view" value="original"> Original</label>
         </fieldset>
-        <label class="check"><input type="checkbox" id="showDrift" checked> Outline every change in red</label>
+        <label class="check"><input type="checkbox" id="showDrift" checked aria-describedby="outlineKey"> Show outlines</label>
+        <p class="muted" id="outlineKey">Red marks edits kept in the final image. Green marks changes the lock reversed.</p>
         <div class="row">
           <button type="button" id="keepBtn">Keep this result</button>
-          <button type="button" id="undoBtn" class="secondary">Back to original</button>
+          <button type="button" id="undoBtn" class="secondary">Back to previous step</button>
         </div>
         <p id="resultMsg" class="muted"></p>
         <button type="button" id="restartBtn" class="secondary small">Start a new edit</button>
-        <p class="status implemented">Implemented: outside the painted area the original pixels are pasted back, blocked changes are counted, and every change is outlined in red.</p>
-        <p class="status simulated">Simulated: the model output is pre-recorded.</p>
+        <p class="status implemented">Implemented: the lock preserves pixels outside the confirmed edit scope.</p>
+        <p class="status simulated">Simulated: the model's edit is drawn by code from keyword rules.</p>
         <p class="status planned">Planned: version history for kept results.</p>
       </section>
 
       <h2>Status key</h2>
       <ul class="legend">
         <li><span class="dot implemented"></span>implemented</li>
-        <li><span class="dot simulated"></span>simulated (pre-recorded mock)</li>
+        <li><span class="dot simulated"></span>simulated (keyword rules and code, no AI model)</li>
         <li><span class="dot planned"></span>planned</li>
       </ul>
     </aside>
   </main>
 
-  <script src="static/samples.js?v=20261119c"></script>
-  <script src="static/recorded_runs.js?v=20261119c"></script>
-  <script src="static/app.js?v=20261119c"></script>
+  <script src="static/samples.js?v=20261120a"></script>
+  <script src="static/rules.js?v=20261120a"></script>
+  <script src="static/app.js?v=20261121i"></script>
 </body>
 </html>
