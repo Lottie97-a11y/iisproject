@@ -289,11 +289,12 @@ function analyse(parsed) {
   const paintedObjects = [...paintedBy.entries()].filter(([id, n]) => n >= minFor(id)).map(([id]) => id);
   const ignored = [...paintedBy.entries()].filter(([id, n]) => n < minFor(id));
   const touched = paintedObjects.filter((id) => !BACKGROUND.has(id)); // objects A changes whole
-  // A changes wall and floor wherever painted, however little, so the card lists any of it
-  const bgTouched = [...paintedBy.keys()].filter((id) => BACKGROUND.has(id));
+  // 22 Nov: in A, wall and floor change where painted only from MIN_TOUCH_BG pixels; less is a brush edge
+  const bgTouched = paintedObjects.filter((id) => BACKGROUND.has(id));
+  const bgEdge = [...paintedBy.entries()].filter(([id, n]) => BACKGROUND.has(id) && n < MIN_TOUCH_BG);
   // share of each object that is painted, in per cent
   const share = Object.fromEntries([...paintedBy.entries()].map(([id, n]) => [id, Math.round((100 * n) / totalBy.get(id))]));
-  return { painted, overlap, targetTotal, others, touched, bgTouched, paintedObjects, ignored, share };
+  return { painted, overlap, targetTotal, others, touched, bgTouched, bgEdge, paintedObjects, ignored, share };
 }
 
 // Step 2 advice (user's rules, 21 Nov), shown above the mode list:
@@ -399,6 +400,14 @@ function renderCard(mode, typed, parsed, a) {
     willKeep = "every object your brush did not touch; if the model changes it, it is put back.";
     const missed = parsed.targets.filter((id) => !a.touched.includes(id) && !a.bgTouched.includes(id));
     const extra = a.touched.filter((id) => !parsed.targets.includes(id));
+    if (!a.touched.length && !a.bgTouched.length) {
+      block.push(`Your brush only grazes the edges (under ${MIN_TOUCH} pixels of an object or ${MIN_TOUCH_BG} of the background), so in mode A nothing would change. Paint the object you want to change.`);
+    }
+    if (a.bgEdge.length) {
+      const edges = a.bgEdge.map(([id, n]) => `${objName(id)} (${n} px)`);
+      warn.push(`You painted only a little of ${edges.join(" and ")}, under ${MIN_TOUCH_BG} pixels. In mode A this counts as the brush edge, so `
+        + `${a.bgEdge.length > 1 ? "they" : "it"} will not change. Paint more of it if you meant to change it.`);
+    }
     if (missed.length) warn.push(`Your words name ${listNames(missed)}, but your brush did not touch ${missed.length > 1 ? "them" : "it"}. This mode changes what you touch, so ${listNames(missed)} will not change.`);
     if (a.touched.length > 1) {
       // 22 Nov: extra warning whenever the brush range will change more than one whole object
@@ -461,7 +470,7 @@ function renderCard(mode, typed, parsed, a) {
   card.appendChild(note);
 
   $("confirmBtn").disabled = block.length > 0;
-  state.pending = { mode, instruction: typed, parsed, touched: a.touched };
+  state.pending = { mode, instruction: typed, parsed, touched: a.touched, bgTouched: a.bgTouched };
 }
 
 function confirmEdit() {
@@ -482,7 +491,10 @@ function confirmEdit() {
 function inScope(conf, p, painted) {
   const k = state.objMap[p];
   const id = k >= 0 ? state.scene.objects[k].id : null;
-  if (conf.mode === "A") return id && !BACKGROUND.has(id) ? conf.touched.includes(id) : painted;
+  if (conf.mode === "A") {
+    if (!id) return painted;
+    return BACKGROUND.has(id) ? painted && conf.bgTouched.includes(id) : conf.touched.includes(id);
+  }
   if (conf.mode === "B") return painted && !!id && conf.parsed.targets.includes(id);
   return painted;
 }

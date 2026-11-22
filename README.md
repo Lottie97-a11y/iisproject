@@ -1,6 +1,6 @@
 # Region-locked image editing (IIS A2 prototype)
 
-Prose word count: 1538 (code and commands not counted)
+Prose word count: 1632 (code and commands not counted)
 
 When people use text prompts to edit part of an AI-generated image, the model can change other parts they wanted to keep. Building on my A1 literature review, this browser prototype explores letting users lock those areas so the system preserves them during editing. It compares three ways of combining the user's words with their painting.
 
@@ -55,6 +55,7 @@ The first two changes are in commit [4407188](https://github.com/Lottie97-a11y/i
 
 - **21 Nov – Whole-object selection in A.** A brush stroke selects each named object it touches in full. Unnamed objects touched by the same stroke keep their original colours and get green outlines. Replaced the same day (next entry).
 - **21 Nov – Three modes redefined.** A now changes every object the brush touches, as a whole (wall and floor only where painted); B changes only the named objects, only where painted (the former A); C is unchanged. The model's unwanted changes now happen in every mode, so the lock is tested in all three. The mode is now chosen on the edit-card step, so the same painting and words can be compared across modes; on the result page, "Back to previous step" (formerly "Back to original") undoes the edit and returns to that step. On that step, advice suggests a mode: if the words name exactly the painted objects, A (whole objects) or B (painted parts), with the painted share of each object when there are several; otherwise C. In mode A, the edit card also warns whenever the brush touches more than one object, since each will change as a whole. An object counts as painted only from 40 pixels, and the background (wall, floor) only from 500 pixels, because it surrounds every object and a brush edge touches it easily. Page 1 states this rule and names the objects and the background; page 2 lists anything the brush touched that was not counted, only when there is something. Why: whole-object selection could not change part of an object, such as half the rug, while the overlap rule needed the whole object painted to change all of it; giving each rule its own mode covers both, and choosing the mode after painting lets the same input be compared. Checked: after each change Claude ran test cases in a headless browser and I reviewed the screenshots; counting the floor like an object made almost every case "unclear", so I chose a 500-pixel threshold for the background; on the live page I checked the tool and result buttons and asked for them to match.
+- **22 Nov – Background edges in A.** In mode A, a wall or floor painted under 500 pixels is now treated as the brush edge and left unchanged, and the edit card says so; if nothing else is touched, the run is blocked. Why: the advice already said such a background was not counted, but the edit still recoloured it. Checked: I spotted in storyboard A that 346 floor pixels turned blue although the advice said the floor was not counted; after the fix, Claude reran the case and the floor was unchanged.
 
 ## AI assistance
 
@@ -69,5 +70,5 @@ The first two changes are in commit [4407188](https://github.com/Lottie97-a11y/i
 - `samples/room.png`: the sample image, drawn in code by `tools/make_sample.py`. It replaced the first sample, `house.png`.
 - `static/samples.js`: generated copy of `samples/` that the page reads; do not edit by hand.
 - `static/rules.js`: the object list and keyword rules described above.
-- `docs/`: the system diagram (`system_diagram.png`, `system_diagram.svg`) and storyboards A–C (`storyboard_A.png`, `storyboard_B.png`, `storyboard_C.png`), made from the version in commit 3cb852f.
+- `docs/`: the system diagram (`system_diagram.png`, `system_diagram.svg`) and storyboards A–C (`storyboard_A.png`, `storyboard_B.png`, `storyboard_C.png`), made from the 22 Nov version of the page.
 - No ZIP file.
