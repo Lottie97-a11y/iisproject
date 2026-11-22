@@ -1,6 +1,6 @@
 # Region-locked image editing (IIS A2 prototype)
 
-Prose word count: 1983 (code and commands not counted)
+Prose word count: 2013 (code and commands not counted)
 
 When people use text prompts to edit part of an AI-generated image, the model can change other parts they wanted to keep. Building on my A1 literature review, this browser prototype explores letting users lock those areas so the system preserves them during editing. It compares three ways of combining the user's words with their painting.
 
@@ -12,7 +12,7 @@ Live page: https://lottie97-a11y.github.io/iisproject/
 | --- | --- |
 | Sample image on a canvas, browser only | implemented |
 | Mask painting (brush size, erase, clear); painted area in blue; optional dimming outside the brush strokes, with painted areas in their true colours | implemented |
-| Three modes: A changes every object the brush touches, as a whole, the wall and floor included; B changes only the objects the words name, only where painted; C changes everything painted. In every mode the simulated model also makes unwanted changes (the cat turns grey, the vase of roses vanishes), which the lock puts back | the choice is implemented; each mode's edit is simulated |
+| Three modes: A changes, as a whole, every object or area with at least a set share painted (10% of an object, 5% of the wall or floor); B changes only the objects the words name, only where painted; C changes everything painted. In every mode the simulated model also makes unwanted changes (the cat turns grey, the vase of roses vanishes), which the lock puts back | the choice is implemented; each mode's edit is simulated |
 | Reading the instruction (object, colour, brighter or darker) | simulated: keyword rules stand in for a language model |
 | Mode chosen on the edit-card step, with advice on which mode to choose (an object counts as painted from 10% of its area, the background from 5%); the card is built from the words, the painting and the mode and rebuilt when the mode changes; it warns about painted objects the words do not name and blocks a run that would change nothing | implemented |
 | Confirm / go back: the result step opens only after Confirm | implemented |
@@ -20,7 +20,7 @@ Live page: https://lottie97-a11y.github.io/iisproject/
 | Counting blocked changes; red outlines for edits, green for changes the lock reversed; final, model and original views | implemented |
 | Keep the result / back to the previous step (edit undone; painting, words and mode kept) | implemented |
 | Version history of kept results | planned |
-| Live AI models | not in scope |
+| Live AI models | not in scope: live models need a paid API key, which a public page cannot keep private, so the edits are simulated |
 
 ## Technology stack
 
