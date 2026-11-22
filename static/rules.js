@@ -20,8 +20,8 @@ window.SCENE = {
         recolour: [[214, 40, 80], [236, 110, 140]] },
       { id: "table", words: ["table"], colours: [[122, 82, 46]] },
       { id: "window", words: ["window"], colours: [[250, 250, 245], [178, 216, 240]] },
-      { id: "wall", words: ["wall", "walls"], colours: [[236, 226, 208]] },
-      { id: "floor", words: ["floor"], colours: [[196, 164, 124]] },
+      { id: "wall", words: ["wall", "walls"], colours: [[236, 226, 208]], stuff: true }, // stuff = background, as a segmentation model would label it
+      { id: "floor", words: ["floor"], colours: [[196, 164, 124]], stuff: true },
     ],
     // Mode B only: unwanted changes a words-led, whole-image model also makes (as in my
     // Lab 3 Test B). Each applies only if none of its objects is named in the instruction.

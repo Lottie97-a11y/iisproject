@@ -37,9 +37,13 @@ const EDITED = 1;
 const PROTECTED = 2;
 const EDIT_OUTLINE = [207, 34, 46, 255];
 const PROTECTED_OUTLINE = [26, 127, 55, 255];
-const BACKGROUND = new Set(["wall", "floor"]); // changed only where painted, never as a whole
-const MIN_TOUCH = 40; // an object counts as painted only from this many pixels (brush edges)
-const MIN_TOUCH_BG = 500; // wall and floor surround every object, so they need more
+// Background ("stuff") comes from the scene data, as a segmentation model would label it;
+// it changes only where painted, never as a whole. Filled in when the sample loads.
+let BACKGROUND = new Set();
+// 22 Nov: share of an object's own area that must be painted for it to count (brush edges below)
+const MIN_SHARE = 0.10;    // objects
+const MIN_SHARE_BG = 0.05; // background
+const pct = (x) => `${Math.round(x * 100)}%`;
 
 const samples = Array.isArray(window.SAMPLES) ? window.SAMPLES : [];
 
@@ -76,7 +80,8 @@ function loadSample(sample) {
     state.sample = sample;
     state.scene = window.SCENE[sample.name] || null;
     state.objMap = state.scene ? window.objectMap(state.original, state.scene) : null;
-    if (state.scene) { // page 1: name the two classes the 40 / 500 pixel rule refers to
+    BACKGROUND = new Set(state.scene ? state.scene.objects.filter((o) => o.stuff).map((o) => o.id) : []);
+    if (state.scene) { // page 1: name the two classes the 10% / 5% rule refers to
       const ids = state.scene.objects.map((o) => o.id);
       $("countClasses").textContent = `Objects: ${listNames(ids.filter((id) => !BACKGROUND.has(id)))}. `
         + `Background: ${listNames(ids.filter((id) => BACKGROUND.has(id)))}.`;
@@ -89,7 +94,7 @@ function loadSample(sample) {
 }
 
 const MODE_HELP = {
-  A: "Changes every object your brush touches (at least 40 pixels of it), as a whole. Wall and floor change only where you painted.",
+  A: "Changes every object your brush touches (at least 10% of it), as a whole. Wall and floor change only where you painted.",
   B: "Changes only the objects your words name, and only where you painted them.",
   C: "Changes everything you painted, whatever it is.",
 };
@@ -281,17 +286,18 @@ function analyse(parsed) {
     }
   }
   const targetTotal = parsed.targets.reduce((s, id) => s + (totalBy.get(id) || 0), 0);
-  // painted objects the words do not name (ignore slivers under 40 px at an edge)
-  const others = [...paintedBy.entries()].filter(([id, n]) => n >= 40 && !parsed.targets.includes(id)
-    && id !== "wall" && id !== "floor").map(([id]) => id);
-  // painted objects, wall and floor included; under MIN_TOUCH pixels an object does not count
-  const minFor = (id) => (BACKGROUND.has(id) ? MIN_TOUCH_BG : MIN_TOUCH);
-  const paintedObjects = [...paintedBy.entries()].filter(([id, n]) => n >= minFor(id)).map(([id]) => id);
-  const ignored = [...paintedBy.entries()].filter(([id, n]) => n < minFor(id));
+  // painted share of each object's own area; below the threshold it is a brush edge and does not count
+  const shareOf = (id) => (paintedBy.get(id) || 0) / totalBy.get(id);
+  const minFor = (id) => (BACKGROUND.has(id) ? MIN_SHARE_BG : MIN_SHARE);
+  const counts = (id) => shareOf(id) >= minFor(id);
+  // painted objects the words do not name
+  const others = [...paintedBy.keys()].filter((id) => counts(id) && !parsed.targets.includes(id) && !BACKGROUND.has(id));
+  const paintedObjects = [...paintedBy.keys()].filter(counts);
+  const ignored = [...paintedBy.entries()].filter(([id]) => !counts(id)).map(([id, n]) => [id, n, shareOf(id)]);
   const touched = paintedObjects.filter((id) => !BACKGROUND.has(id)); // objects A changes whole
-  // 22 Nov: in A, wall and floor change where painted only from MIN_TOUCH_BG pixels; less is a brush edge
+  // in A, the background changes where painted only from MIN_SHARE_BG of it; less is a brush edge
   const bgTouched = paintedObjects.filter((id) => BACKGROUND.has(id));
-  const bgEdge = [...paintedBy.entries()].filter(([id, n]) => BACKGROUND.has(id) && n < MIN_TOUCH_BG);
+  const bgEdge = ignored.filter(([id]) => BACKGROUND.has(id));
   // share of each object that is painted, in per cent
   const share = Object.fromEntries([...paintedBy.entries()].map(([id, n]) => [id, Math.round((100 * n) / totalBy.get(id))]));
   return { painted, overlap, targetTotal, others, touched, bgTouched, bgEdge, paintedObjects, ignored, share };
@@ -331,7 +337,11 @@ function makeCard() {
   const typed = $("instruction").value.trim();
   const parsed = window.readInstruction(typed, state.scene);
   const a = analyse(parsed);
-  state.draft = { typed, parsed, a, advice: modeAdvice(parsed, a) };
+  let advice = modeAdvice(parsed, a);
+  if (!advice && a.ignored.length) { // painted, but nothing reaches the threshold
+    advice = { text: `Nothing you painted counts yet: paint at least ${pct(MIN_SHARE)} of an object or ${pct(MIN_SHARE_BG)} of a background area.` };
+  }
+  state.draft = { typed, parsed, a, advice };
   setStep("confirm");
   const box = $("modeAdvice"), adv = state.draft.advice;
   box.hidden = !adv;
@@ -340,8 +350,8 @@ function makeCard() {
   if (adv && a.ignored.length) { // only when something the brush touched was not counted
     const rule = document.createElement("small");
     rule.className = "advice-rule";
-    const skipped = a.ignored.map(([id, n]) =>
-      `${objName(id)} (${n} px, under ${BACKGROUND.has(id) ? `${MIN_TOUCH_BG} for the background` : MIN_TOUCH})`);
+    const skipped = a.ignored.map(([id, n, s]) =>
+      `${objName(id)} (${n} px, ${s < 0.01 ? "under 1%" : pct(s)} of it; needs ${BACKGROUND.has(id) ? pct(MIN_SHARE_BG) : pct(MIN_SHARE)})`);
     rule.textContent = `Not counted as painted: ${skipped.join(", ")}.`;
     box.appendChild(rule);
   }
@@ -401,14 +411,14 @@ function renderCard(mode, typed, parsed, a) {
     const missed = parsed.targets.filter((id) => !a.touched.includes(id) && !a.bgTouched.includes(id));
     const extra = a.touched.filter((id) => !parsed.targets.includes(id));
     if (!a.touched.length && !a.bgTouched.length) {
-      block.push(`Your brush only grazes the edges (under ${MIN_TOUCH} pixels of an object or ${MIN_TOUCH_BG} of the background), so in mode A nothing would change. Paint the object you want to change.`);
+      block.push(`Your brush only grazes the edges (under ${pct(MIN_SHARE)} of an object or ${pct(MIN_SHARE_BG)} of the background), so in mode A nothing would change. Paint more of the object you want to change.`);
     }
     if (a.bgEdge.length) {
-      const edges = a.bgEdge.map(([id, n]) => `${objName(id)} (${n} px)`);
-      warn.push(`You painted only a little of ${edges.join(" and ")}, under ${MIN_TOUCH_BG} pixels. In mode A this counts as the brush edge, so `
-        + `${a.bgEdge.length > 1 ? "they" : "it"} will not change. Paint more of it if you meant to change it.`);
+      const edges = a.bgEdge.map(([id, n, s]) => `${objName(id)} (${n} px, ${s < 0.01 ? "under 1%" : pct(s)} of it)`);
+      warn.push(`You painted only a little of ${edges.join(" and ")}, under ${pct(MIN_SHARE_BG)}. In mode A this counts as the brush edge, so `
+        + `${a.bgEdge.length > 1 ? "they" : "it"} will not change. Paint more of ${a.bgEdge.length > 1 ? "them" : "it"} if you meant to change ${a.bgEdge.length > 1 ? "them" : "it"}.`);
     }
-    if (missed.length) warn.push(`Your words name ${listNames(missed)}, but your brush did not touch ${missed.length > 1 ? "them" : "it"}. This mode changes what you touch, so ${listNames(missed)} will not change.`);
+    if (missed.length) warn.push(`Your words name ${listNames(missed)}, but you did not paint enough of ${missed.length > 1 ? "them" : "it"} to count (at least ${pct(MIN_SHARE)}). This mode changes what you paint, so ${listNames(missed)} will not change.`);
     if (a.touched.length > 1) {
       // 22 Nov: extra warning whenever the brush range will change more than one whole object
       warn.push(`Your brush touches ${a.touched.length} objects: ${listNames(a.touched)}. Mode A will change each of them as a whole`
@@ -630,7 +640,7 @@ function offTargetChanges() {
     const k = state.objMap[i / 4];
     if (k < 0) continue;
     const id = state.scene.objects[k].id;
-    if (!parsed.targets.includes(id) && id !== "wall" && id !== "floor") count.set(id, (count.get(id) || 0) + 1);
+    if (!parsed.targets.includes(id) && !BACKGROUND.has(id)) count.set(id, (count.get(id) || 0) + 1);
   }
   return [...count.entries()].filter(([, n]) => n >= 40).map(([id]) => id);
 }
