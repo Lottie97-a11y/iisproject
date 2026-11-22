@@ -12,8 +12,8 @@
 //                   changes the lock reversed.
 //
 // Three modes: which pixels the confirmed edit may change.
-//   A  whole objects: every object the brush touches changes as a whole
-//      (wall and floor only where painted)
+//   A  whole objects: every object the brush touches changes as a whole,
+//      the wall and floor too once enough of them is painted
 //   B  named and painted: only the objects the words name, only where painted
 //   C  painting: everything painted, whatever it is
 // In every mode the simulated model also changes things it was not asked to (like my Lab 3
@@ -38,12 +38,15 @@ const PROTECTED = 2;
 const EDIT_OUTLINE = [207, 34, 46, 255];
 const PROTECTED_OUTLINE = [26, 127, 55, 255];
 // Background ("stuff") comes from the scene data, as a segmentation model would label it;
-// it changes only where painted, never as a whole. Filled in when the sample loads.
+// it needs a smaller painted share to count (5%). Filled in when the sample loads.
 let BACKGROUND = new Set();
 // 22 Nov: share of an object's own area that must be painted for it to count (brush edges below)
 const MIN_SHARE = 0.10;    // objects
 const MIN_SHARE_BG = 0.05; // background
 const pct = (x) => `${Math.round(x * 100)}%`;
+// painted share for messages: one decimal below 10%, so 4.6% is not shown as "5%" next to "needs 5%"
+const sharePct = (s) => (s < 0.01 ? "under 1%" : s < 0.1 ? `${(s * 100).toFixed(1)}%` : pct(s));
+const needPct = (id) => pct(BACKGROUND.has(id) ? MIN_SHARE_BG : MIN_SHARE);
 
 const samples = Array.isArray(window.SAMPLES) ? window.SAMPLES : [];
 
@@ -58,7 +61,7 @@ const state = {
   editableShare: 0,   // share of pixels the user marked as editable (0..1)
   scene: null,        // objects in the current image (static/rules.js)
   objMap: null,       // pixel -> object index
-  confirmed: null,    // what the user confirmed: { mode, instruction, parsed }
+  confirmed: null,    // what the user confirmed: { mode, instruction, parsed, touched, bgTouched, counted }
   original: null,     // ImageData of the unedited image
   outcome: null,      // { raw, final, drift, driftCount, editedCount, lockedCount }
   kept: false,
@@ -94,7 +97,7 @@ function loadSample(sample) {
 }
 
 const MODE_HELP = {
-  A: "Changes every object your brush touches (at least 10% of it), as a whole. Wall and floor change only where you painted.",
+  A: "Changes every object your brush touches, as a whole: an object once you paint 10% of it, the wall or floor once you paint 5% of it.",
   B: "Changes only the objects your words name, and only where you painted them.",
   C: "Changes everything you painted, whatever it is.",
 };
@@ -295,7 +298,7 @@ function analyse(parsed) {
   const paintedObjects = [...paintedBy.keys()].filter(counts);
   const ignored = [...paintedBy.entries()].filter(([id]) => !counts(id)).map(([id, n]) => [id, n, shareOf(id)]);
   const touched = paintedObjects.filter((id) => !BACKGROUND.has(id)); // objects A changes whole
-  // in A, the background changes where painted only from MIN_SHARE_BG of it; less is a brush edge
+  // background painted from MIN_SHARE_BG of it; in A it then changes as a whole, less is a brush edge
   const bgTouched = paintedObjects.filter((id) => BACKGROUND.has(id));
   const bgEdge = ignored.filter(([id]) => BACKGROUND.has(id));
   // share of each object that is painted, in per cent
@@ -310,7 +313,7 @@ function analyse(parsed) {
 //   otherwise (words name none, other or more/fewer objects than painted):
 //     one object      -> the object is not clear: suggest C
 //     several objects -> the scope is not clear: suggest C
-// Nothing painted except wall or floor: no advice.
+// Nothing counts as painted: no advice (makeCard then explains the thresholds).
 function modeAdvice(parsed, a) {
   const painted = a.paintedObjects;
   if (!painted.length) return null;
@@ -323,8 +326,7 @@ function modeAdvice(parsed, a) {
   }
   if (same) {
     const shares = painted.map((id) => `${objName(id)} ${a.share[id]}%`).join(", ");
-    const bgNote = painted.some((id) => BACKGROUND.has(id)) ? " (In A, the wall and floor still change only where you painted.)" : "";
-    return { text: `You want to change ${listNames(painted)}. Share of each object you painted: ${shares}. ${choice("these objects")}${bgNote}` };
+    return { text: `You want to change ${listNames(painted)}. Share of each object you painted: ${shares}. ${choice("these objects")}` };
   }
   if (painted.length === 1) {
     return { text: `You have not made clear which object to change. We suggest mode C, which changes exactly what you painted (${objName(painted[0])}).` };
@@ -351,7 +353,7 @@ function makeCard() {
     const rule = document.createElement("small");
     rule.className = "advice-rule";
     const skipped = a.ignored.map(([id, n, s]) =>
-      `${objName(id)} (${n} px, ${s < 0.01 ? "under 1%" : pct(s)} of it; needs ${BACKGROUND.has(id) ? pct(MIN_SHARE_BG) : pct(MIN_SHARE)})`);
+      `${objName(id)} (${n} px, ${sharePct(s)} of it; needs ${needPct(id)})`);
     rule.textContent = `Not counted as painted: ${skipped.join(", ")}.`;
     box.appendChild(rule);
   }
@@ -403,25 +405,25 @@ function renderCard(mode, typed, parsed, a) {
   let willKeep = "everything you did not paint; if the model changes it, it is put back.";
   if (mode === "A") {
     // 21 Nov (user's design): A changes every object the brush touches, as a whole.
-    const parts = [];
-    if (a.touched.length) parts.push(`the whole of ${listNames(a.touched)}`);
-    if (a.bgTouched.length) parts.push(`${listNames(a.bgTouched)} only where you painted`);
-    willChange = parts.join("; ") || "nothing yet";
-    willKeep = "every object your brush did not touch; if the model changes it, it is put back.";
-    const missed = parsed.targets.filter((id) => !a.touched.includes(id) && !a.bgTouched.includes(id));
-    const extra = a.touched.filter((id) => !parsed.targets.includes(id));
-    if (!a.touched.length && !a.bgTouched.length) {
+    // 22 Nov (user's decision): the wall and floor too, once 5% of them is painted.
+    const all = [...a.touched, ...a.bgTouched];
+    willChange = all.length ? `the whole of ${listNames(all)}` : "nothing yet";
+    willKeep = "everything your brush did not touch; if the model changes it, it is put back.";
+    const missed = parsed.targets.filter((id) => !all.includes(id));
+    const extra = all.filter((id) => !parsed.targets.includes(id));
+    if (!all.length) {
       block.push(`Your brush only grazes the edges (under ${pct(MIN_SHARE)} of an object or ${pct(MIN_SHARE_BG)} of the background), so in mode A nothing would change. Paint more of the object you want to change.`);
     }
     if (a.bgEdge.length) {
-      const edges = a.bgEdge.map(([id, n, s]) => `${objName(id)} (${n} px, ${s < 0.01 ? "under 1%" : pct(s)} of it)`);
+      const edges = a.bgEdge.map(([id, n, s]) => `${objName(id)} (${n} px, ${sharePct(s)} of it)`);
       warn.push(`You painted only a little of ${edges.join(" and ")}, under ${pct(MIN_SHARE_BG)}. In mode A this counts as the brush edge, so `
         + `${a.bgEdge.length > 1 ? "they" : "it"} will not change. Paint more of ${a.bgEdge.length > 1 ? "them" : "it"} if you meant to change ${a.bgEdge.length > 1 ? "them" : "it"}.`);
     }
-    if (missed.length) warn.push(`Your words name ${listNames(missed)}, but you did not paint enough of ${missed.length > 1 ? "them" : "it"} to count (at least ${pct(MIN_SHARE)}). This mode changes what you paint, so ${listNames(missed)} will not change.`);
-    if (a.touched.length > 1) {
-      // 22 Nov: extra warning whenever the brush range will change more than one whole object
-      warn.push(`Your brush touches ${a.touched.length} objects: ${listNames(a.touched)}. Mode A will change each of them as a whole`
+    if (missed.length) warn.push(`Your words name ${listNames(missed)}, but you did not paint enough of ${missed.length > 1 ? "them" : "it"} to count (`
+      + missed.map((id) => `at least ${needPct(id)} of ${objName(id)}`).join(", ") + `). This mode changes what you paint, so ${listNames(missed)} will not change.`);
+    if (all.length > 1) {
+      // 22 Nov: extra warning whenever the brush range will change more than one whole object or area
+      warn.push(`Your brush touches ${all.length} ${a.bgTouched.length ? "areas" : "objects"}: ${listNames(all)}. Mode A will change each of them as a whole`
         + (extra.length ? `, including ${listNames(extra)}, which your words do not name` : "")
         + `. If you meant only one object, go back and paint inside it, or choose B.`);
     } else if (named && extra.length) {
@@ -480,7 +482,7 @@ function renderCard(mode, typed, parsed, a) {
   card.appendChild(note);
 
   $("confirmBtn").disabled = block.length > 0;
-  state.pending = { mode, instruction: typed, parsed, touched: a.touched, bgTouched: a.bgTouched };
+  state.pending = { mode, instruction: typed, parsed, touched: a.touched, bgTouched: a.bgTouched, counted: a.paintedObjects };
 }
 
 function confirmEdit() {
@@ -503,7 +505,7 @@ function inScope(conf, p, painted) {
   const id = k >= 0 ? state.scene.objects[k].id : null;
   if (conf.mode === "A") {
     if (!id) return painted;
-    return BACKGROUND.has(id) ? painted && conf.bgTouched.includes(id) : conf.touched.includes(id);
+    return conf.touched.includes(id) || conf.bgTouched.includes(id); // whole objects, wall and floor alike
   }
   if (conf.mode === "B") return painted && !!id && conf.parsed.targets.includes(id);
   return painted;
@@ -528,7 +530,7 @@ function simulateModel(conf) {
   }
   // Unwanted extra changes, as a real model makes (my Lab 3 Test B), in every mode. Objects
   // the edit is meant to change are left alone; the lock puts the rest back.
-  const meant = new Set(mode === "A" ? conf.touched : parsed.targets);
+  const meant = new Set(mode === "A" ? [...conf.touched, ...conf.bgTouched] : parsed.targets);
   if (mode === "C") for (let p = 0; p < edited.length; p++) if (edited[p] && state.objMap[p] >= 0) meant.add(objs[state.objMap[p]].id);
   {
     for (const d of state.scene.drift) {
@@ -607,7 +609,7 @@ function reportDrift() {
   const box = $("driftReport");
   const pct = o.lockedCount ? ((o.driftCount / o.lockedCount) * 100).toFixed(1) : "0.0";
   const conf = state.confirmed;
-  const scope = conf.mode === "A" ? "the objects your brush touched"
+  const scope = conf.mode === "A" ? "the objects and areas your brush touched"
     : conf.mode === "B" ? `the painted part of ${listNames(conf.parsed.targets)}` : "the area you painted";
   $("outlineKey").textContent = "Red marks edits kept in the final image. Green marks changes the lock reversed.";
   const offTarget = offTargetChanges();
@@ -629,20 +631,12 @@ function reportDrift() {
   }
 }
 
-// Objects changed in the final image that the user's words did not name (modes A and C).
+// Areas changed that the user's words did not name (modes A and C), by the same 10% / 5%
+// rule as the card. In C the wall and floor change only where painted, so they are not listed.
 function offTargetChanges() {
-  const { parsed } = state.confirmed;
-  if (!parsed.targets.length) return [];
-  const f = state.outcome.final.data, orig = state.original.data;
-  const count = new Map();
-  for (let i = 0; i < f.length; i += 4) {
-    if (f[i] === orig[i] && f[i + 1] === orig[i + 1] && f[i + 2] === orig[i + 2]) continue;
-    const k = state.objMap[i / 4];
-    if (k < 0) continue;
-    const id = state.scene.objects[k].id;
-    if (!parsed.targets.includes(id) && !BACKGROUND.has(id)) count.set(id, (count.get(id) || 0) + 1);
-  }
-  return [...count.entries()].filter(([, n]) => n >= 40).map(([id]) => id);
+  const { mode, parsed, counted } = state.confirmed;
+  if (!parsed.targets.length || mode === "B") return [];
+  return counted.filter((id) => !parsed.targets.includes(id) && (mode === "A" || !BACKGROUND.has(id)));
 }
 
 function viewName() {

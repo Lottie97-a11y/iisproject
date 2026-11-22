@@ -5,7 +5,7 @@
 // 2. SCENE: the objects in samples/room.png. Every object is drawn in its own flat colours
 //    (see tools/make_sample.py), so each pixel can be assigned to an object by its colour.
 //    This stands in for a segmentation model.
-// 3. editPixels(): draws the edit in code. It stands in for an image-editing model.
+// 3. editPixel(): draws the edit in code. It stands in for an image-editing model.
 
 window.SCENE = {
   "room.png": {
@@ -23,8 +23,8 @@ window.SCENE = {
       { id: "wall", words: ["wall", "walls"], colours: [[236, 226, 208]], stuff: true }, // stuff = background, as a segmentation model would label it
       { id: "floor", words: ["floor"], colours: [[196, 164, 124]], stuff: true },
     ],
-    // Mode B only: unwanted changes a words-led, whole-image model also makes (as in my
-    // Lab 3 Test B). Each applies only if none of its objects is named in the instruction.
+    // Unwanted changes a whole-image model also makes (as in my Lab 3 Test B), in every mode.
+    // Each applies only if none of its objects is meant to change (see simulateModel()).
     drift: [
       { objects: ["cat"], map: [[[226, 140, 58], [150, 150, 156]], [[178, 96, 34], [92, 92, 98]]] }, // grey tabby
       { objects: ["vase", "roses"], vanish: true }, // the vase of roses disappears
