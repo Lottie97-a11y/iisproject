@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Region-locked image editing (A2 prototype)</title>
-  <link rel="stylesheet" href="static/style.css?v=20261121h">
+  <link rel="stylesheet" href="static/style.css?v=20261121k">
 </head>
 <body>
   <header>
@@ -92,11 +92,11 @@
         <label class="check"><input type="checkbox" id="showDrift" checked aria-describedby="outlineKey"> Show outlines</label>
         <p class="muted" id="outlineKey">Red marks edits kept in the final image. Green marks changes the lock reversed.</p>
         <div class="row">
-          <button type="button" id="keepBtn">Keep this result</button>
-          <button type="button" id="undoBtn" class="secondary">Back to previous step</button>
+          <button type="button" id="keepBtn" class="result-btn">Keep this result</button>
+          <button type="button" id="undoBtn" class="secondary result-btn">Back to previous step</button>
         </div>
         <p id="resultMsg" class="muted"></p>
-        <button type="button" id="restartBtn" class="secondary small">Start a new edit</button>
+        <button type="button" id="restartBtn" class="secondary result-btn">Start a new edit</button>
         <p class="status implemented">Implemented: the lock preserves pixels outside the confirmed edit scope.</p>
         <p class="status simulated">Simulated: the model's edit is drawn by code from keyword rules.</p>
         <p class="status planned">Planned: version history for kept results.</p>
@@ -113,6 +113,6 @@
 
   <script src="static/samples.js?v=20261120a"></script>
   <script src="static/rules.js?v=20261120a"></script>
-  <script src="static/app.js?v=20261121i"></script>
+  <script src="static/app.js?v=20261122a"></script>
 </body>
 </html>

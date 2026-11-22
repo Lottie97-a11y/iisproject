@@ -46,7 +46,9 @@ button:disabled { background: #d8dde3; border-color: #d8dde3; color: #57606a; cu
 button.small { margin-top: 0; padding: 3px 10px; font-size: 13px; }
 button.secondary { background: #fff; color: #1f6feb; }
 button.secondary:disabled { background: #fff; color: #8c959f; border-color: #d8dde3; }
-button.toggle { background: #fff; color: #57606a; border-color: #d8dde3; }
+/* result step: the three buttons share one size */
+button.result-btn { display: block; width: 100%; box-sizing: border-box; margin-top: 8px; padding: 6px 12px; font-size: inherit; }
+button.toggle { background: #fff; color: #1f6feb; border-color: #1f6feb; } /* inactive tools: blue outline, like Clear */
 button.toggle.on { background: #1f6feb; color: #fff; border-color: #1f6feb; }
 select:disabled, input:disabled, textarea:disabled { opacity: 0.6; }
 #scenario { width: 100%; margin-bottom: 6px; font: inherit; }

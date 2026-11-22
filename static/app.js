@@ -400,7 +400,14 @@ function renderCard(mode, typed, parsed, a) {
     const missed = parsed.targets.filter((id) => !a.touched.includes(id) && !a.bgTouched.includes(id));
     const extra = a.touched.filter((id) => !parsed.targets.includes(id));
     if (missed.length) warn.push(`Your words name ${listNames(missed)}, but your brush did not touch ${missed.length > 1 ? "them" : "it"}. This mode changes what you touch, so ${listNames(missed)} will not change.`);
-    if (named && extra.length) warn.push(`Your brush also touched ${listNames(extra)}, which your words do not name. In this mode ${extra.length > 1 ? "they" : "it"} will change too, as a whole.`);
+    if (a.touched.length > 1) {
+      // 22 Nov: extra warning whenever the brush range will change more than one whole object
+      warn.push(`Your brush touches ${a.touched.length} objects: ${listNames(a.touched)}. Mode A will change each of them as a whole`
+        + (extra.length ? `, including ${listNames(extra)}, which your words do not name` : "")
+        + `. If you meant only one object, go back and paint inside it, or choose B.`);
+    } else if (named && extra.length) {
+      warn.push(`Your brush also touched ${listNames(extra)}, which your words do not name. In this mode ${extra.length > 1 ? "they" : "it"} will change too, as a whole.`);
+    }
   } else if (mode === "B") {
     willChange = named ? `${named}, only where you painted (${px(a.overlap)})` : "nothing yet";
     if (named) willKeep = `everything except the painted part of ${named}; if the model changes it, it is put back.`;
