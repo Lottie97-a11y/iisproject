@@ -191,7 +191,8 @@ function setStep(step) {
   $("confirmPanel").hidden = step !== "confirm";
   $("resultPanel").hidden = step !== "result";
   const editing = step === "select";
-  for (const id of ["sample", "instruction", "brushSize", "modePaint", "modeErase", "clearMask", "showLocked"]) {
+  $("instruction").disabled = step === "result";
+  for (const id of ["sample", "brushSize", "modePaint", "modeErase", "clearMask", "showLocked"]) {
     $(id).disabled = !editing;
   }
   overlay.classList.toggle("locked", !editing);
@@ -219,7 +220,7 @@ function makeCard() {
   if (!parsed.options.length) return notifyInput("请描述要修改的颜色或明暗，已有笔画会保留。");
   const mask = maskCtx.getImageData(0, 0, overlay.width, overlay.height).data;
   const rows = state.scene.objects.map(obj => ({ obj, total: 0, painted: 0, local: 0, whole: 0,
-    effect: parsed.effects.get(obj.id) || parsed.shared, selected: false, mode: "" }));
+    selected: false, selectionOverride: null, mode: "" }));
   const eligible = new Uint8Array(state.objMap.length);
   for (let p = 0; p < eligible.length; p++) {
     const row = rows[state.objMap[p]];
@@ -235,13 +236,33 @@ function makeCard() {
       if (painted) row.local++;
     }
   }
-  const candidates = rows.filter(row => parsed.targets.has(row.obj.id) || (row.total && row.painted * 10 >= row.total));
-  if (!candidates.length) return notifyInput("请点名一个元素，或至少涂到它的 10%。");
-  if (candidates.length === 1) candidates[0].selected = true;
-  state.draft = { rows, candidates, eligible, effects: parsed.options };
-  $("selectMsg").textContent = "";
+  state.draft = { rows, eligible };
+  if (!updateCandidates(parsed)) return;
   setStep("confirm");
+}
+
+// Brush coverage stays fixed while the prompt is editable in the confirmation panel.
+function updateCandidates(parsed) {
+  const draft = state.draft;
+  draft.effects = parsed.options;
+  draft.candidates = draft.rows.filter(row => parsed.targets.has(row.obj.id) || (row.total && row.painted * 10 >= row.total));
+  for (const row of draft.rows) {
+    const candidate = draft.candidates.includes(row);
+    const named = parsed.targets.has(row.obj.id);
+    row.selected = candidate && (row.selectionOverride ?? (named || draft.candidates.length === 1));
+    const inferred = parsed.effects.get(row.obj.id) || parsed.shared;
+    const inferredLabel = effectLabel(inferred);
+    if (row.inferredLabel !== inferredLabel) row.effectOverride = null;
+    row.inferredLabel = inferredLabel;
+    const override = parsed.options.find(effect => effectLabel(effect) === row.effectOverride);
+    row.effect = override || inferred;
+  }
+  const problem = !parsed.options.length ? "请描述要修改的颜色或明暗，已有笔画会保留。"
+    : !draft.candidates.length ? "请点名一个元素，或至少涂到它的 10%。" : "";
+  if (problem) notifyInput(problem);
+  else $("selectMsg").textContent = "";
   showOptions();
+  return !problem;
 }
 
 function showOptions() {
@@ -267,7 +288,11 @@ function showOptions() {
       select.add(new Option("选择效果", ""));
       effects.forEach((e, index) => select.add(new Option(effectLabel(e), String(index))));
       select.value = row.effect ? String(effects.indexOf(row.effect)) : "";
-      select.onchange = () => { row.effect = select.value === "" ? null : effects[Number(select.value)]; refreshScope(); };
+      select.onchange = () => {
+        row.effect = select.value === "" ? null : effects[Number(select.value)];
+        row.effectOverride = effectLabel(row.effect);
+        refreshScope();
+      };
       settings.append(select);
     } else {
       const effect = document.createElement("span");
@@ -275,17 +300,20 @@ function showOptions() {
       settings.append(effect);
     }
     for (const [mode,title] of [["A","局部"],["B","整体"]]) {
-      const radio = document.createElement("input");
-      radio.type = "radio";
-      radio.name = "scope-" + row.obj.id;
-      radio.value = mode;
-      radio.checked = row.mode === mode;
-      radio.setAttribute("aria-label", name + title);
-      radio.disabled = mode === "A" && !row.local;
-      radio.onchange = () => { row.mode = mode; refreshScope(); };
-      const wrap = document.createElement("label");
-      wrap.append(radio, " " + title);
-      settings.append(wrap);
+      const button = document.createElement("button");
+      button.type = "button";
+      button.value = mode;
+      button.textContent = title;
+      button.setAttribute("aria-label", name + title);
+      button.setAttribute("aria-pressed", String(row.mode === mode));
+      button.onclick = () => {
+        row.mode = row.mode === mode ? "" : mode;
+        for (const option of settings.querySelectorAll("button")) {
+          option.setAttribute("aria-pressed", String(option.value === row.mode));
+        }
+        refreshScope();
+      };
+      settings.append(button);
     }
     if (!row.local) {
       const hint = document.createElement("small");
@@ -293,11 +321,16 @@ function showOptions() {
       settings.append(hint);
     }
     const enable = () => {
-      for (const control of settings.querySelectorAll("input,select")) {
+      for (const control of settings.querySelectorAll("button,select")) {
         control.disabled = !row.selected || (control.value === "A" && !row.local);
       }
     };
-    check.onchange = () => { row.selected = check.checked; enable(); refreshScope(); };
+    check.onchange = () => {
+      row.selectionOverride = check.checked;
+      row.selected = check.checked;
+      enable();
+      refreshScope();
+    };
     enable();
     list.append(line);
   }
@@ -330,6 +363,7 @@ function confirmEdit() {
   state.outcome = enforceLock(simulateModel(state.confirmed));
   state.kept = false;
   $("resultMsg").textContent = "";
+  $("showDrift").checked = false;
   document.querySelector('input[name="view"][value="final"]').checked = true;
   setStep("result");
   reportDrift();
@@ -493,7 +527,14 @@ $("modePaint").addEventListener("click", () => setMode("paint"));
 $("modeErase").addEventListener("click", () => setMode("erase"));
 $("clearMask").addEventListener("click", clearMask);
 $("showLocked").addEventListener("change", renderOverlay);
-$("instruction").addEventListener("input", updateInputGuide);
+function syncInstruction() {
+  if (state.step === "confirm") updateCandidates(readInstruction($("instruction").value, state.scene));
+  else updateInputGuide();
+}
+$("instruction").addEventListener("input", e => {
+  if (!e.isComposing) syncInstruction();
+});
+$("instruction").addEventListener("compositionend", syncInstruction);
 $("makeCard").addEventListener("click", makeCard);
 $("confirmBtn").addEventListener("click", confirmEdit);
 $("backBtn").addEventListener("click", goBack);
