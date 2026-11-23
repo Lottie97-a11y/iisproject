@@ -1,27 +1,3 @@
-// Region-locked image editing: browser-only prototype.
-//
-// Step 1 (select):  the user writes an instruction and paints the editable area.
-// Step 2 (confirm): the user chooses a mode; an edit card, built by rules from the words,
-//                   the painting and the mode, says what will change and what is kept, and
-//                   flags mismatches. Changing the mode rebuilds the card. Nothing runs
-//                   until the user confirms; "Go back" returns to step 1.
-// Step 3 (result):  reached only from the Confirm button. The simulated model makes its
-//                   edit; outside the permitted scope the original pixels are pasted back, so
-//                   the lock holds even when the model changes too much. Blocked changes
-//                   are counted and reported. Red outlines mark edits, green outlines mark
-//                   changes the lock reversed.
-//
-// Three modes: which pixels the confirmed edit may change.
-//   A  whole objects: every object the brush touches changes as a whole,
-//      the wall and floor too once enough of them is painted
-//   B  named and painted: only the objects the words name, only where painted
-//   C  painting: everything painted, whatever it is
-// In every mode the simulated model also changes things it was not asked to (like my Lab 3
-// Test B: the cat turns grey, the vase of roses vanishes); the lock puts those back.
-//
-// Simulated parts (static/rules.js): the instruction is read by keyword rules and the edit
-// is drawn by code. No AI model is called. The lock and its checks are real code.
-
 const $ = (id) => document.getElementById(id);
 
 const imageCanvas = $("imageCanvas");
@@ -37,17 +13,6 @@ const EDITED = 1;
 const PROTECTED = 2;
 const EDIT_OUTLINE = [207, 34, 46, 255];
 const PROTECTED_OUTLINE = [26, 127, 55, 255];
-// Background ("stuff") comes from the scene data, as a segmentation model would label it;
-// it needs a smaller painted share to count (5%). Filled in when the sample loads.
-let BACKGROUND = new Set();
-// 22 Nov: share of an object's own area that must be painted for it to count (brush edges below)
-const MIN_SHARE = 0.10;    // objects
-const MIN_SHARE_BG = 0.05; // background
-const pct = (x) => `${Math.round(x * 100)}%`;
-// painted share for messages: one decimal below 10%, so 4.6% is not shown as "5%" next to "needs 5%"
-const sharePct = (s) => (s < 0.01 ? "under 1%" : s < 0.1 ? `${(s * 100).toFixed(1)}%` : pct(s));
-const needPct = (id) => pct(BACKGROUND.has(id) ? MIN_SHARE_BG : MIN_SHARE);
-
 const samples = Array.isArray(window.SAMPLES) ? window.SAMPLES : [];
 
 const state = {
@@ -61,7 +26,7 @@ const state = {
   editableShare: 0,   // share of pixels the user marked as editable (0..1)
   scene: null,        // objects in the current image (static/rules.js)
   objMap: null,       // pixel -> object index
-  confirmed: null,    // what the user confirmed: { mode, instruction, parsed, touched, bgTouched, counted }
+  confirmed: null,
   original: null,     // ImageData of the unedited image
   outcome: null,      // { raw, final, drift, driftCount, editedCount, lockedCount }
   kept: false,
@@ -83,12 +48,6 @@ function loadSample(sample) {
     state.sample = sample;
     state.scene = window.SCENE[sample.name] || null;
     state.objMap = state.scene ? window.objectMap(state.original, state.scene) : null;
-    BACKGROUND = new Set(state.scene ? state.scene.objects.filter((o) => o.stuff).map((o) => o.id) : []);
-    if (state.scene) { // page 1: name the two classes the 10% / 5% rule refers to
-      const ids = state.scene.objects.map((o) => o.id);
-      $("countClasses").textContent = `Objects: ${listNames(ids.filter((id) => !BACKGROUND.has(id)))}. `
-        + `Background: ${listNames(ids.filter((id) => BACKGROUND.has(id)))}.`;
-    }
     $("selectMsg").textContent = state.scene ? "" : "This image has no object list, so the modes cannot run.";
     clearMask();
   };
@@ -96,35 +55,8 @@ function loadSample(sample) {
   img.src = sample.src;
 }
 
-const MODE_HELP = {
-  A: "Changes every object your brush touches, as a whole: an object once you paint 10% of it, the wall or floor once you paint 5% of it.",
-  B: "Changes only the objects your words name, and only where you painted them.",
-  C: "Changes everything you painted, whatever it is.",
-};
-
-function updateModeHelp() {
-  $("modeHelp").textContent = MODE_HELP[$("editMode").value] || "";
-}
-
 function updateInputGuide() {
-  const typed = $("instruction").value.trim();
-  const painted = state.editableShare > 0;
-  $("makeCard").disabled = state.step !== "select" || !state.scene || !typed || !painted;
-
-  let message;
-  if (!typed) {
-    message = painted
-      ? "Your selection is saved. No instruction entered yet. Describe the change you want."
-      : "No instruction entered yet. Describe your edit and paint the area you want to change.";
-  } else if (!painted) {
-    const targets = state.scene ? window.readInstruction(typed, state.scene).targets : [];
-    message = targets.length
-      ? `Your instruction names ${listNames(targets)}. Paint the area you want to change.`
-      : "Paint the area you want to change.";
-  } else {
-    message = "Your instruction and selection are ready. Next, choose a mode.";
-  }
-  if ($("inputGuide").textContent !== message) $("inputGuide").textContent = message;
+  $("makeCard").disabled = state.step !== "select" || !state.scene;
 }
 
 // ---------- mask ----------
@@ -171,10 +103,7 @@ function updateMaskInfo() {
   for (let i = 3; i < data.length; i += 4) if (data[i] > 0) editable++;
   state.editableShare = editable / (width * height);
   updateInputGuide();
-  const pct = (state.editableShare * 100).toFixed(1);
-  $("maskInfo").textContent = editable === 0
-    ? "Brush over the image to make a selection."
-    : `Brush strokes cover ${pct}% of the image.`;
+  $("maskInfo").textContent = "笔画覆盖 " + (state.editableShare * 100).toFixed(1) + "%";
 }
 
 const tintCanvas = document.createElement("canvas"); // painted area, coloured for display
@@ -190,6 +119,10 @@ function renderOverlay() {
     if (state.outcome && $("showDrift").checked && viewName() !== "original") {
       ovCtx.drawImage(state.outcome.driftLayer, 0, 0);
     }
+    return;
+  }
+  if (state.step === "confirm") {
+    if (state.preview) ovCtx.putImageData(state.preview, 0, 0);
     return;
   }
   if ($("showLocked").checked) {
@@ -261,232 +194,135 @@ function setStep(step) {
     $(id).disabled = !editing;
   }
   overlay.classList.toggle("locked", !editing);
-  $("editMode").disabled = step !== "confirm";
+  document.body.dataset.step = step;
   updateInputGuide();
   renderOverlay();
 }
 
-function objName(id) { return `the ${id}`; }
-function listNames(ids) {
-  const n = ids.map(objName);
-  return n.length <= 1 ? (n[0] || "") : `${n.slice(0, -1).join(", ")} and ${n.at(-1)}`;
-}
-
-// Counts, for the card: painted pixels per object, and pixels of the named objects.
-function analyse(parsed) {
-  const mask = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height).data;
-  const objs = state.scene.objects;
-  const paintedBy = new Map(), totalBy = new Map();
-  let painted = 0, overlap = 0;
-  for (let p = 0; p < state.objMap.length; p++) {
-    const k = state.objMap[p];
-    const id = k >= 0 ? objs[k].id : null;
-    if (id) totalBy.set(id, (totalBy.get(id) || 0) + 1);
-    if (mask[p * 4 + 3] > 0) {
-      painted++;
-      if (id) paintedBy.set(id, (paintedBy.get(id) || 0) + 1);
-      if (id && parsed.targets.includes(id)) overlap++;
-    }
-  }
-  const targetTotal = parsed.targets.reduce((s, id) => s + (totalBy.get(id) || 0), 0);
-  // painted share of each object's own area; below the threshold it is a brush edge and does not count
-  const shareOf = (id) => (paintedBy.get(id) || 0) / totalBy.get(id);
-  const minFor = (id) => (BACKGROUND.has(id) ? MIN_SHARE_BG : MIN_SHARE);
-  const counts = (id) => shareOf(id) >= minFor(id);
-  // painted objects the words do not name
-  const others = [...paintedBy.keys()].filter((id) => counts(id) && !parsed.targets.includes(id) && !BACKGROUND.has(id));
-  const paintedObjects = [...paintedBy.keys()].filter(counts);
-  const ignored = [...paintedBy.entries()].filter(([id]) => !counts(id)).map(([id, n]) => [id, n, shareOf(id)]);
-  const touched = paintedObjects.filter((id) => !BACKGROUND.has(id)); // objects A changes whole
-  // background painted from MIN_SHARE_BG of it; in A it then changes as a whole, less is a brush edge
-  const bgTouched = paintedObjects.filter((id) => BACKGROUND.has(id));
-  const bgEdge = ignored.filter(([id]) => BACKGROUND.has(id));
-  // share of each object that is painted, in per cent
-  const share = Object.fromEntries([...paintedBy.entries()].map(([id, n]) => [id, Math.round((100 * n) / totalBy.get(id))]));
-  return { painted, overlap, targetTotal, others, touched, bgTouched, bgEdge, paintedObjects, ignored, share };
-}
-
-// Step 2 advice (user's rules, 21 Nov), shown above the mode list:
-//   the words name exactly the painted objects:
-//     one object      -> suggest A (whole) or B (painted part)
-//     several objects -> the same, with the painted share of each object
-//   otherwise (words name none, other or more/fewer objects than painted):
-//     one object      -> the object is not clear: suggest C
-//     several objects -> the scope is not clear: suggest C
-// Nothing counts as painted: no advice (makeCard then explains the thresholds).
-function modeAdvice(parsed, a) {
-  const painted = a.paintedObjects;
-  if (!painted.length) return null;
-  const named = parsed.targets;
-  const same = named.length === painted.length && painted.every((id) => named.includes(id));
-  const choice = (what) => `To change the whole of ${what}, choose A. To change only the parts you painted, choose B.`;
-  if (same && painted.length === 1) {
-    const name = objName(painted[0]);
-    return { text: `You want to change ${name}. ${choice(name).replace("the parts", "the part")}` };
-  }
-  if (same) {
-    const shares = painted.map((id) => `${objName(id)} ${a.share[id]}%`).join(", ");
-    return { text: `You want to change ${listNames(painted)}. Share of each object you painted: ${shares}. ${choice("these objects")}` };
-  }
-  if (painted.length === 1) {
-    return { text: `You have not made clear which object to change. We suggest mode C, which changes exactly what you painted (${objName(painted[0])}).` };
-  }
-  return { text: `You have not made clear the scope of the change: you painted ${listNames(painted)}, but your words name ${named.length ? listNames(named) : "no object"}. We suggest mode C, which changes exactly what you painted.` };
+let messageTimer;
+function notifyInput(message) {
+  const box = $("selectMsg");
+  clearTimeout(messageTimer);
+  box.textContent = message;
+  box.classList.remove("visible");
+  void box.offsetWidth;
+  box.classList.add("visible");
+  messageTimer = setTimeout(() => { box.textContent = ""; }, 4800);
 }
 
 function makeCard() {
-  if ($("makeCard").disabled) return;
-  const typed = $("instruction").value.trim();
-  const parsed = window.readInstruction(typed, state.scene);
-  const a = analyse(parsed);
-  let advice = modeAdvice(parsed, a);
-  if (!advice && a.ignored.length) { // painted, but nothing reaches the threshold
-    advice = { text: `Nothing you painted counts yet: paint at least ${pct(MIN_SHARE)} of an object or ${pct(MIN_SHARE_BG)} of a background area.` };
+  if (state.step !== "select" || !state.scene) return;
+  const parsed = readInstruction($("instruction").value, state.scene);
+  if (!parsed.options.length) return notifyInput("请描述要修改的颜色或明暗，已有笔画会保留。");
+  const mask = maskCtx.getImageData(0, 0, overlay.width, overlay.height).data;
+  const rows = state.scene.objects.map(obj => ({ obj, total: 0, painted: 0, local: 0, whole: 0,
+    effect: parsed.effects.get(obj.id) || parsed.shared, selected: false, mode: "" }));
+  const eligible = new Uint8Array(state.objMap.length);
+  for (let p = 0; p < eligible.length; p++) {
+    const row = rows[state.objMap[p]];
+    if (!row) continue;
+    const i = p * 4;
+    const painted = mask[i + 3] > 0;
+    row.total++;
+    if (painted) row.painted++;
+    const d = state.original.data;
+    if (window.isRecolourable(row.obj, d[i], d[i+1], d[i+2])) {
+      eligible[p] = painted ? 2 : 1;
+      row.whole++;
+      if (painted) row.local++;
+    }
   }
-  state.draft = { typed, parsed, a, advice };
+  const candidates = rows.filter(row => parsed.targets.has(row.obj.id) || (row.total && row.painted * 10 >= row.total));
+  if (!candidates.length) return notifyInput("请点名一个元素，或至少涂到它的 10%。");
+  if (candidates.length === 1) candidates[0].selected = true;
+  state.draft = { rows, candidates, eligible, effects: parsed.options };
+  $("selectMsg").textContent = "";
   setStep("confirm");
-  const box = $("modeAdvice"), adv = state.draft.advice;
-  box.hidden = !adv;
-  box.className = adv && adv.block ? "advice blocked" : "advice";
-  box.textContent = adv ? adv.text : "";
-  if (adv && a.ignored.length) { // only when something the brush touched was not counted
-    const rule = document.createElement("small");
-    rule.className = "advice-rule";
-    const skipped = a.ignored.map(([id, n, s]) =>
-      `${objName(id)} (${n} px, ${sharePct(s)} of it; needs ${needPct(id)})`);
-    rule.textContent = `Not counted as painted: ${skipped.join(", ")}.`;
-    box.appendChild(rule);
-  }
-  showCardForMode();
+  showOptions();
 }
 
-// Step 2: the card follows the chosen mode; it is rebuilt whenever the mode changes.
-function showCardForMode() {
-  updateModeHelp();
-  if (!state.draft) return;
-  const locked = !!(state.draft.advice && state.draft.advice.block);
-  $("editMode").disabled = locked;
-  const mode = locked ? "" : $("editMode").value;
-  if (locked) {
-    $("editMode").value = "";
-    $("card").innerHTML = "";
-    $("confirmBtn").disabled = true;
-    state.pending = null;
-    $("modeHelp").textContent = "";
-    return;
+function showOptions() {
+  const { candidates, effects } = state.draft;
+  const list = $("card");
+  list.replaceChildren();
+  for (const row of candidates) {
+    const line = document.createElement("div");
+    line.className = "choice-row";
+    const name = NAMES[row.obj.id];
+    const label = document.createElement("label");
+    const check = document.createElement("input");
+    check.type = "checkbox";
+    check.checked = row.selected;
+    check.dataset.object = row.obj.id;
+    const settings = document.createElement("div");
+    settings.className = "settings";
+    label.append(check, " " + name);
+    line.append(label, settings);
+    if (!row.effect || effects.length > 1) {
+      const select = document.createElement("select");
+      select.setAttribute("aria-label", name + "的效果");
+      select.add(new Option("选择效果", ""));
+      effects.forEach((e, index) => select.add(new Option(effectLabel(e), String(index))));
+      select.value = row.effect ? String(effects.indexOf(row.effect)) : "";
+      select.onchange = () => { row.effect = select.value === "" ? null : effects[Number(select.value)]; refreshScope(); };
+      settings.append(select);
+    } else {
+      const effect = document.createElement("span");
+      effect.textContent = effectLabel(row.effect);
+      settings.append(effect);
+    }
+    for (const [mode,title] of [["A","局部"],["B","整体"]]) {
+      const radio = document.createElement("input");
+      radio.type = "radio";
+      radio.name = "scope-" + row.obj.id;
+      radio.value = mode;
+      radio.checked = row.mode === mode;
+      radio.setAttribute("aria-label", name + title);
+      radio.disabled = mode === "A" && !row.local;
+      radio.onchange = () => { row.mode = mode; refreshScope(); };
+      const wrap = document.createElement("label");
+      wrap.append(radio, " " + title);
+      settings.append(wrap);
+    }
+    if (!row.local) {
+      const hint = document.createElement("small");
+      hint.textContent = "局部修改需先涂到可改色区域";
+      settings.append(hint);
+    }
+    const enable = () => {
+      for (const control of settings.querySelectorAll("input,select")) {
+        control.disabled = !row.selected || (control.value === "A" && !row.local);
+      }
+    };
+    check.onchange = () => { row.selected = check.checked; enable(); refreshScope(); };
+    enable();
+    list.append(line);
   }
-  if (!mode) {
-    $("card").innerHTML = "";
-    const p = document.createElement("p");
-    p.className = "muted";
-    p.textContent = "Choose a mode above to see what it will change.";
-    $("card").appendChild(p);
-    $("confirmBtn").disabled = true;
-    state.pending = null;
-    return;
-  }
-  renderCard(mode, state.draft.typed, state.draft.parsed, state.draft.a);
+  refreshScope();
 }
 
-function renderCard(mode, typed, parsed, a) {
-  const card = $("card");
-  card.innerHTML = "";
-  const block = [], warn = [];
-  const change = [parsed.colourName && `colour to ${parsed.colourName}`, parsed.tone].filter(Boolean).join(", ");
-  const named = parsed.targets.length ? listNames(parsed.targets) : "";
-  const px = (n) => `${n.toLocaleString()} px`;
-
-  if (!change) block.push("I could not find a change in your words. Name a colour (e.g. blue) or say brighter / darker.");
-  if (mode === "B" && !named) {
-    block.push(`I could not find an object in your words. Try: ${state.scene.objects.map((o) => o.words[0]).join(", ")}.`);
-    if (parsed.vague.length) warn.push(`"${parsed.vague[0]}" does not say which object you mean.`);
+function refreshScope() {
+  const {rows, candidates, eligible} = state.draft;
+  const selected = candidates.filter(row => row.selected);
+  const ready = selected.length > 0 && selected.every(row => row.effect && row.mode && (row.mode === "B" ? row.whole : row.local));
+  const scope = new Uint8Array(eligible.length);
+  const preview = new ImageData(overlay.width, overlay.height);
+  for (let p = 0; p < scope.length; p++) {
+    const row = rows[state.objMap[p]];
+    if (!row?.selected || !row.effect || !eligible[p]) continue;
+    if (row.mode !== "B" && !(row.mode === "A" && eligible[p] === 2)) continue;
+    scope[p] = 1;
+    const i = p * 4;
+    preview.data[i] = 85; preview.data[i+1] = 255; preview.data[i+2] = 190; preview.data[i+3] = 175;
   }
-  let willChange = "";
-  let willKeep = "everything you did not paint; if the model changes it, it is put back.";
-  if (mode === "A") {
-    // 21 Nov (user's design): A changes every object the brush touches, as a whole.
-    // 22 Nov (user's decision): the wall and floor too, once 5% of them is painted.
-    const all = [...a.touched, ...a.bgTouched];
-    willChange = all.length ? `the whole of ${listNames(all)}` : "nothing yet";
-    willKeep = "everything your brush did not touch; if the model changes it, it is put back.";
-    const missed = parsed.targets.filter((id) => !all.includes(id));
-    const extra = all.filter((id) => !parsed.targets.includes(id));
-    if (!all.length) {
-      block.push(`Your brush only grazes the edges (under ${pct(MIN_SHARE)} of an object or ${pct(MIN_SHARE_BG)} of the background), so in mode A nothing would change. Paint more of the object you want to change.`);
-    }
-    if (a.bgEdge.length) {
-      const edges = a.bgEdge.map(([id, n, s]) => `${objName(id)} (${n} px, ${sharePct(s)} of it)`);
-      warn.push(`You painted only a little of ${edges.join(" and ")}, under ${pct(MIN_SHARE_BG)}. In mode A this counts as the brush edge, so `
-        + `${a.bgEdge.length > 1 ? "they" : "it"} will not change. Paint more of ${a.bgEdge.length > 1 ? "them" : "it"} if you meant to change ${a.bgEdge.length > 1 ? "them" : "it"}.`);
-    }
-    if (missed.length) warn.push(`Your words name ${listNames(missed)}, but you did not paint enough of ${missed.length > 1 ? "them" : "it"} to count (`
-      + missed.map((id) => `at least ${needPct(id)} of ${objName(id)}`).join(", ") + `). This mode changes what you paint, so ${listNames(missed)} will not change.`);
-    if (all.length > 1) {
-      // 22 Nov: extra warning whenever the brush range will change more than one whole object or area
-      warn.push(`Your brush touches ${all.length} ${a.bgTouched.length ? "areas" : "objects"}: ${listNames(all)}. Mode A will change each of them as a whole`
-        + (extra.length ? `, including ${listNames(extra)}, which your words do not name` : "")
-        + `. If you meant only one object, go back and paint inside it, or choose B.`);
-    } else if (named && extra.length) {
-      warn.push(`Your brush also touched ${listNames(extra)}, which your words do not name. In this mode ${extra.length > 1 ? "they" : "it"} will change too, as a whole.`);
-    }
-  } else if (mode === "B") {
-    willChange = named ? `${named}, only where you painted (${px(a.overlap)})` : "nothing yet";
-    if (named) willKeep = `everything except the painted part of ${named}; if the model changes it, it is put back.`;
-    if (named && a.overlap === 0) {
-      block.push(`Your words are about ${named}, but your painting does not cover ${parsed.targets.length > 1 ? "them" : "it"}, so nothing would change. Paint ${named} or change your words.`);
-    }
-    if (named && a.others.length) warn.push(`You also painted ${listNames(a.others)}; ${a.others.length > 1 ? "they" : "it"} will not change, because your words do not name ${a.others.length > 1 ? "them" : "it"}.`);
-  } else {
-    willChange = `everything you painted (${px(a.painted)})`;
-    if (named && a.overlap === 0) warn.push(`Your words name ${named}, but you did not paint ${parsed.targets.length > 1 ? "them" : "it"}. In this mode only the painted area changes, so ${named} will not.`);
-    if (named && a.others.length) warn.push(`You also painted ${listNames(a.others)}, which your words do not name. In this mode ${a.others.length > 1 ? "they" : "it"} will change too.`);
-  }
-
-  const rows = [
-    ["You asked", typed],
-    ["Mode", `${mode}: ${MODE_HELP[mode]}`],
-    ["Read from your words", `object: ${named || "none found"}; change: ${change || "none found"}`],
-    ["Will change", willChange],
-    ["Will be kept", willKeep],
-  ];
-  const dl = document.createElement("dl");
-  for (const [k, v] of rows) {
-    const dt = document.createElement("dt");
-    dt.textContent = k;
-    const dd = document.createElement("dd");
-    dd.textContent = v;
-    dl.append(dt, dd);
-  }
-  card.appendChild(dl);
-
-  const box = (cls, title, items) => {
-    const div = document.createElement("div");
-    div.className = cls;
-    const h = document.createElement("strong");
-    h.textContent = title;
-    const ul = document.createElement("ul");
-    for (const it of items) {
-      const li = document.createElement("li");
-      li.textContent = it;
-      ul.appendChild(li);
-    }
-    div.append(h, ul);
-    card.appendChild(div);
-  };
-  if (block.length) box("blocked", "Cannot run yet", block);
-  if (warn.length) box("unclear", "Check before confirming", warn);
-
-  const note = document.createElement("p");
-  note.className = "muted";
-  note.textContent = "Simulated: your words are read by keyword rules (standing in for a language model) and the edit is drawn by code (standing in for an image model).";
-  card.appendChild(note);
-
-  $("confirmBtn").disabled = block.length > 0;
-  state.pending = { mode, instruction: typed, parsed, touched: a.touched, bgTouched: a.bgTouched, counted: a.paintedObjects };
+  state.pending = {scope, rows};
+  state.preview = preview;
+  $("confirmBtn").disabled = !ready;
+  renderOverlay();
 }
 
 function confirmEdit() {
-  if (state.step !== "confirm" || !state.pending || $("confirmBtn").disabled) return; // the result step is reachable only from here
+  if (state.step !== "confirm" || $("confirmBtn").disabled) return;
   state.confirmed = state.pending;
   state.outcome = enforceLock(simulateModel(state.confirmed));
   state.kept = false;
@@ -497,51 +333,27 @@ function confirmEdit() {
   showView();
 }
 
-// Simulated model (no model is called; rules in static/rules.js). Returns the image the
-// "model" would produce for the chosen mode. enforceLock() then decides what the user gets.
-// The confirmed scope of each mode: may pixel p change? Used by the model and by the lock.
-function inScope(conf, p, painted) {
-  const k = state.objMap[p];
-  const id = k >= 0 ? state.scene.objects[k].id : null;
-  if (conf.mode === "A") {
-    if (!id) return painted;
-    return conf.touched.includes(id) || conf.bgTouched.includes(id); // whole objects, wall and floor alike
+function simulateModel({scope, rows}) {
+  const orig = state.original;
+  const out = new ImageData(new Uint8ClampedArray(orig.data), orig.width, orig.height);
+  const driftByObject = new Map();
+  for (const drift of state.scene.drift) {
+    if (rows.some(row => row.selected && drift.objects.includes(row.obj.id))) continue;
+    for (const id of drift.objects) driftByObject.set(id, drift);
   }
-  if (conf.mode === "B") return painted && !!id && conf.parsed.targets.includes(id);
-  return painted;
-}
-
-function simulateModel(conf) {
-  const { mode, parsed } = conf;
-  const orig = state.original.data;
-  const out = new ImageData(new Uint8ClampedArray(orig), state.original.width, state.original.height);
-  const mask = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height).data;
-  const objs = state.scene.objects;
-  const edited = new Uint8Array(orig.length / 4);
-  const set = (i, c) => { out.data[i] = c[0]; out.data[i + 1] = c[1]; out.data[i + 2] = c[2]; };
-  for (let i = 0; i < orig.length; i += 4) {
-    const k = state.objMap[i / 4];
-    const obj = k >= 0 ? objs[k] : null;
-    const r = orig[i], g = orig[i + 1], b = orig[i + 2];
-    if (!inScope(conf, i / 4, mask[i + 3] > 0)) continue;
-    if (mode !== "C" && obj && !window.isRecolourable(obj, r, g, b)) continue; // eyes, outlines
-    set(i, window.editPixel(r, g, b, parsed));
-    edited[i / 4] = 1;
-  }
-  // Unwanted extra changes, as a real model makes (my Lab 3 Test B), in every mode. Objects
-  // the edit is meant to change are left alone; the lock puts the rest back.
-  const meant = new Set(mode === "A" ? [...conf.touched, ...conf.bgTouched] : parsed.targets);
-  if (mode === "C") for (let p = 0; p < edited.length; p++) if (edited[p] && state.objMap[p] >= 0) meant.add(objs[state.objMap[p]].id);
-  {
-    for (const d of state.scene.drift) {
-      if (d.objects.some((id) => meant.has(id))) continue;
-      for (let i = 0; i < orig.length; i += 4) {
-        const k = state.objMap[i / 4];
-        if (k < 0 || edited[i / 4] || !d.objects.includes(objs[k].id)) continue;
-        if (d.vanish) { set(i, state.scene.background); continue; }
-        for (const [from, to] of d.map) {
-          if (orig[i] === from[0] && orig[i + 1] === from[1] && orig[i + 2] === from[2]) set(i, to);
-        }
+  for (let p = 0; p < scope.length; p++) {
+    const row = rows[state.objMap[p]];
+    if (!row) continue;
+    const i = p * 4;
+    const [r,g,b] = [orig.data[i], orig.data[i+1], orig.data[i+2]];
+    if (scope[p]) {
+      out.data.set(window.editPixel(r,g,b,row.effect), i);
+    } else {
+      const drift = driftByObject.get(row.obj.id);
+      if (drift?.vanish) out.data.set(state.scene.background, i);
+      else if (drift) {
+        const match = drift.map.find(([from]) => from[0] === r && from[1] === g && from[2] === b);
+        if (match) out.data.set(match[1], i);
       }
     }
   }
@@ -552,14 +364,13 @@ function simulateModel(conf) {
 function enforceLock(raw) {
   const orig = state.original.data;
   const out = raw.data;
-  const mask = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height).data;
   const final = new ImageData(new Uint8ClampedArray(out), raw.width, raw.height);
   const drift = new ImageData(raw.width, raw.height);
   const changeKind = new Uint8Array(raw.width * raw.height);
   let driftCount = 0, editedCount = 0, lockedCount = 0;
   for (let i = 0; i < out.length; i += 4) {
     const changed = out[i] !== orig[i] || out[i + 1] !== orig[i + 1] || out[i + 2] !== orig[i + 2];
-    const allowed = inScope(state.confirmed, i / 4, mask[i + 3] > 0);
+    const allowed = state.confirmed.scope[i / 4];
     if (allowed) {
       if (changed) {
         editedCount++;
@@ -605,38 +416,8 @@ function enforceLock(raw) {
 }
 
 function reportDrift() {
-  const o = state.outcome;
-  const box = $("driftReport");
-  const pct = o.lockedCount ? ((o.driftCount / o.lockedCount) * 100).toFixed(1) : "0.0";
-  const conf = state.confirmed;
-  const scope = conf.mode === "A" ? "the objects and areas your brush touched"
-    : conf.mode === "B" ? `the painted part of ${listNames(conf.parsed.targets)}` : "the area you painted";
-  $("outlineKey").textContent = "Red marks edits kept in the final image. Green marks changes the lock reversed.";
-  const offTarget = offTargetChanges();
-  const pron = offTarget.length > 1 ? "them" : "it";
-  const why = conf.mode === "A" ? `your brush touched ${pron}, so ${offTarget.length > 1 ? "they were" : "it was"} part of the edit` : "the lock cannot protect what you painted";
-  if (o.driftCount > 0) {
-    box.className = "report warn-box";
-    box.textContent = `The model also changed ${o.driftCount.toLocaleString()} pixels outside ${scope} (${pct}% of the locked area). They were put back from the original, ${o.editedCount > 0 ? `so only ${scope} changed` : "so the image did not change"}. Compare "Model output" with "Final" to see what was blocked.`
-      + (offTarget.length ? ` It also changed ${listNames(offTarget)}, which your words did not name: ${why}.` : "");
-  } else if (offTarget.length) {
-    box.className = "report note-box";
-    box.textContent = `Only ${scope} changed (${o.editedCount.toLocaleString()} pixels), but it included ${listNames(offTarget)}, which your words did not name: ${why}.`;
-  } else if (o.editedCount > 0) {
-    box.className = "report ok-box";
-    box.textContent = `The model changed only ${scope} (${o.editedCount.toLocaleString()} pixels). Nothing outside it changed.`;
-  } else {
-    box.className = "report";
-    box.textContent = `The model made no visible change inside ${scope}.`;
-  }
-}
-
-// Areas changed that the user's words did not name (modes A and C), by the same 10% / 5%
-// rule as the card. In C the wall and floor change only where painted, so they are not listed.
-function offTargetChanges() {
-  const { mode, parsed, counted } = state.confirmed;
-  if (!parsed.targets.length || mode === "B") return [];
-  return counted.filter((id) => !parsed.targets.includes(id) && (mode === "A" || !BACKGROUND.has(id)));
+  const {editedCount, driftCount} = state.outcome;
+  $("driftReport").textContent = `修改 ${editedCount.toLocaleString()} 个像素 · 已还原 ${driftCount.toLocaleString()} 个越界像素`;
 }
 
 function viewName() {
@@ -657,7 +438,7 @@ function keepResult() {
   state.kept = true;
   document.querySelector('input[name="view"][value="final"]').checked = true;
   showView();
-  $("resultMsg").textContent = "Kept for this session. Saving versions to come back to is planned.";
+  $("resultMsg").textContent = "已保留当前结果。";
 }
 
 // Page 3 -> page 2: undo the edit and return to the mode and edit card, keeping the
@@ -669,7 +450,7 @@ function backToPrevious() {
   imgCtx.putImageData(state.original, 0, 0);
   $("resultMsg").textContent = "";
   setStep("confirm");
-  showCardForMode();
+  showOptions();
 }
 
 function goBack() {
@@ -709,7 +490,6 @@ $("modeErase").addEventListener("click", () => setMode("erase"));
 $("clearMask").addEventListener("click", clearMask);
 $("showLocked").addEventListener("change", renderOverlay);
 $("instruction").addEventListener("input", updateInputGuide);
-$("editMode").addEventListener("change", showCardForMode);
 $("makeCard").addEventListener("click", makeCard);
 $("confirmBtn").addEventListener("click", confirmEdit);
 $("backBtn").addEventListener("click", goBack);
@@ -733,5 +513,5 @@ if (samples.length === 0) {
   $("sample").addEventListener("change", () => loadSample(samples[Number($("sample").value)]));
   loadSample(samples[0]);
 }
-updateModeHelp();
+
 setStep("select");

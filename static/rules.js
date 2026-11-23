@@ -39,19 +39,62 @@ const COLOUR_WORDS = {
 };
 const LIGHTER_WORDS = ["brighter", "lighter", "brighten", "lighten"];
 const DARKER_WORDS = ["darker", "darken"];
-const VAGUE_WORDS = ["it", "this", "that", "them", "everything"];
+const NAMES = { rug: "地毯", cat: "猫", vase: "花瓶", roses: "玫瑰", table: "桌子", window: "窗户", wall: "墙面", floor: "地板" };
+const ALIASES = { rug: ["垫子"], cat: ["小猫"], roses: ["鲜花", "花朵"], table: ["桌面"], window: ["窗子"], wall: ["墙壁", "墙"] };
+const COLOURS = { red:"红", blue:"蓝", green:"绿", yellow:"黄", orange:"橙", purple:"紫", pink:"粉", black:"黑", white:"白", grey:"灰", brown:"棕" };
+const TONES = { lighter:"提亮", darker:"调暗" };
 
-// Reads the instruction with keyword rules. Returns the named objects, the colour and/or
-// tone change, and any vague words, so the edit card can show what was understood.
-window.readInstruction = function (text, scene) {
-  const words = text.toLowerCase().match(/[a-z]+/g) || [];
-  const targets = scene.objects.filter((o) => o.words.some((w) => words.includes(w))).map((o) => o.id);
-  const colourName = Object.keys(COLOUR_WORDS).find((c) => words.includes(c)) || null;
-  const tone = words.some((w) => LIGHTER_WORDS.includes(w)) ? "lighter"
-    : words.some((w) => DARKER_WORDS.includes(w)) ? "darker" : null;
-  const vague = VAGUE_WORDS.filter((w) => words.includes(w));
-  return { targets, colourName, colour: colourName ? COLOUR_WORDS[colourName] : null, tone, vague };
-};
+function readInstruction(text, scene) {
+  const targets = new Set();
+  const effects = new Map();
+  const distinct = new Map();
+  const lower = text.toLowerCase();
+  // Keep coordinated nouns together until an action is known ("rug and cat blue").
+  const clauses = lower.split(/[,，、;；。.!！\n]+|\band\b(?=\s+(?:make|turn|paint|brighten|darken|lighten)\b)/);
+  let waiting = [];
+  for (const clause of clauses) {
+    const events = [];
+    function collect(terms, kind, value) {
+      for (const term of terms) {
+        const pattern = /^[a-z]+$/.test(term) ? "\\b" + term + "\\b" : term;
+        for (const match of clause.matchAll(new RegExp(pattern, "g"))) {
+          events.push({ position: match.index, kind, value });
+        }
+      }
+    }
+    for (const obj of scene.objects) collect([...obj.words, NAMES[obj.id], ...(ALIASES[obj.id] || [])], "object", obj.id);
+    for (const [id, cn] of Object.entries(COLOURS)) collect(id === "grey" ? [id, "gray", cn] : [id, cn], "colourName", id);
+    collect([...LIGHTER_WORDS, "提亮", "变亮", "调亮"], "tone", "lighter");
+    collect([...DARKER_WORDS, "调暗", "变暗"], "tone", "darker");
+    events.sort((a,b) => a.position - b.position);
+    let effect = {};
+    function finish() {
+      if (!effect.colourName && !effect.tone) return;
+      effect.colour = COLOUR_WORDS[effect.colourName] || null;
+      const label = effectLabel(effect);
+      effect = distinct.get(label) || effect;
+      distinct.set(label, effect);
+      for (const id of waiting) effects.set(id, effect);
+      waiting = [];
+      effect = {};
+    }
+    for (const event of events) {
+      if (event.kind === "object") {
+        if (waiting.length && (effect.colourName || effect.tone)) finish();
+        waiting.push(event.value);
+        targets.add(event.value);
+      } else {
+        effect[event.kind] = event.value;
+      }
+    }
+    finish();
+  }
+  return { targets, effects, shared: distinct.size === 1 ? [...distinct.values()][0] : null, options: [...distinct.values()] };
+}
+
+function effectLabel(effect) {
+  return [COLOURS[effect?.colourName], TONES[effect?.tone]].filter(Boolean).join(" · ");
+}
 
 // Pixel -> object index (or -1) for the whole image, by exact colour.
 window.objectMap = function (imageData, scene) {

@@ -1,4 +1,19 @@
-# Region-locked image editing (IIS A2 prototype)
+# Region-locked image editing
+
+Open `index.html` directly in a browser. The sample, brush, instruction rules and simulated edits run locally.
+
+## Current workflow
+
+Name an object in Chinese or English, or paint at least 10% of its visible area to make it a candidate. This also applies to the wall and floor. A named object can be selected without painting. Enter a colour or brightness change, for example `地毯变蓝、猫变红` or `make the rug blue and the cat red`.
+
+Choose which candidates to include. For each chosen object, select **A · local** for the painted part or **B · whole** for all its editable pixels. Each object can have its own effect. Review the highlighted scope and confirm. The output restores original pixels outside that scope. Compare the final, simulated and original views or go back to adjust the selection.
+
+## Version history
+
+- V1.0 preserves the original three-mode prototype.
+- V2.0 introduces candidate selection, per-object effects and mixed local/whole scopes.
+
+## V1.0 project record
 
 Prose word count: 2013 (code and commands not counted)
 

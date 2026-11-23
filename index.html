@@ -49,31 +49,19 @@
     <aside class="panel">
       <section id="selectPanel">
         <h2><label for="instruction">Describe your edit</label></h2>
+        <p id="selectMsg" class="warn" role="alert"></p>
         <textarea id="instruction" rows="3" placeholder="e.g. make the rug blue" aria-describedby="inputGuide"></textarea>
-        <p id="inputGuide" class="muted" role="status">Enter an instruction and paint the area you want to change.</p>
-        <p id="countRule" class="rule-note">An object counts as painted only if you painted at least 10% of it, or 5% of a background area.
-          <span id="countClasses"></span></p>
+        <p id="inputGuide" class="muted" role="status">输入修改效果，按需涂抹局部。</p>
+        <p>点名元素或涂到它自身面积的 10%，即可列入候选。</p>
 
         <p class="status simulated">Simulated: your words are read by keyword rules and the edit is drawn by code. No AI model is called.</p>
 
-        <button type="button" id="makeCard" disabled>Next: choose a mode</button>
-        <p id="selectMsg" class="warn" role="alert"></p>
+        <button type="button" id="makeCard" disabled>选择修改范围</button>
       </section>
 
       <section id="confirmPanel" hidden>
-        <div id="modeAdvice" class="advice" role="status" hidden></div>
-        <h2><label for="editMode">Choose a mode</label></h2>
-        <select id="editMode" aria-describedby="modeHelp" disabled>
-          <option value="" selected disabled>Select a mode</option>
-          <option value="A">A: whole objects you touch</option>
-          <option value="B">B: named objects, painted part only</option>
-          <option value="C">C: everything you paint</option>
-        </select>
-        <p id="modeHelp" class="muted"></p>
-
-        <h2>Edit card <span class="badge simulated">simulated</span></h2>
+        <h2>选择元素与范围</h2>
         <div id="card" class="card"></div>
-        <p class="muted">Nothing runs until you confirm.</p>
         <div class="row">
           <button type="button" id="confirmBtn">Confirm and run</button>
           <button type="button" id="backBtn" class="secondary">Go back and edit</button>
@@ -112,7 +100,7 @@
   </main>
 
   <script src="static/samples.js?v=20261120a"></script>
-  <script src="static/rules.js?v=20261122c"></script>
-  <script src="static/app.js?v=20261122d"></script>
+  <script src="static/rules.js?v=v2"></script>
+  <script src="static/app.js?v=v2"></script>
 </body>
 </html>
