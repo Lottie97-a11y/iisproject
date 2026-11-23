@@ -12,6 +12,7 @@ Choose which candidates to include. For each chosen object, select **A · local*
 
 - V1.0 preserves the original three-mode prototype.
 - V2.0 introduces candidate selection, per-object effects and mixed local/whole scopes.
+- V2.1 adds the responsive canvas and bottom control panel, scope previews with reduced-motion support, and light/dark themes.
 
 ## V1.0 project record
 

@@ -41,6 +41,7 @@ function loadSample(sample) {
       c.width = img.naturalWidth;
       c.height = img.naturalHeight;
     }
+    $("canvasStack").style.setProperty("--ratio", img.naturalWidth / img.naturalHeight);
     imgCtx.drawImage(img, 0, 0);
     state.original = imgCtx.getImageData(0, 0, img.naturalWidth, img.naturalHeight);
     $("imgInfo").textContent = `${img.naturalWidth} x ${img.naturalHeight} px`;
@@ -186,15 +187,17 @@ function setStep(step) {
   for (const li of document.querySelectorAll("#steps li")) {
     li.classList.toggle("active", li.dataset.step === step);
   }
-  $("selectPanel").hidden = step !== "select";
+  $("selectPanel").hidden = step === "result";
   $("confirmPanel").hidden = step !== "confirm";
   $("resultPanel").hidden = step !== "result";
   const editing = step === "select";
-  for (const id of ["sample", "instruction", "brushSize", "modePaint", "modeErase", "clearMask"]) {
+  for (const id of ["sample", "instruction", "brushSize", "modePaint", "modeErase", "clearMask", "showLocked"]) {
     $(id).disabled = !editing;
   }
   overlay.classList.toggle("locked", !editing);
   document.body.dataset.step = step;
+  if (step === "confirm") $("confirmTitle").focus({preventScroll:true});
+  if (step === "result") $("resultTitle").focus({preventScroll:true});
   updateInputGuide();
   renderOverlay();
 }
@@ -457,6 +460,7 @@ function goBack() {
   $("card").innerHTML = "";
   $("confirmBtn").disabled = false;
   setStep("select");
+  $("instruction").focus({preventScroll:true});
 }
 
 function restart() {
@@ -498,6 +502,30 @@ $("keepBtn").addEventListener("click", keepResult);
 $("undoBtn").addEventListener("click", backToPrevious);
 $("showDrift").addEventListener("change", renderOverlay);
 for (const r of document.querySelectorAll('input[name="view"]')) r.addEventListener("change", showView);
+
+const themeChoice = window.matchMedia("(prefers-color-scheme: dark)");
+let savedTheme;
+try { savedTheme = localStorage.getItem("iis-theme"); } catch {}
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  $("theme").textContent = theme === "dark" ? "切换浅色" : "切换深色";
+  $("theme").setAttribute("aria-label", $("theme").textContent + "主题");
+}
+applyTheme(savedTheme || (themeChoice.matches ? "dark" : "light"));
+$("theme").addEventListener("click", () => {
+  savedTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  applyTheme(savedTheme);
+  try { localStorage.setItem("iis-theme", savedTheme); } catch {}
+});
+themeChoice.addEventListener("change", e => {
+  if (!savedTheme) applyTheme(e.matches ? "dark" : "light");
+});
+
+// Let the canvas resize with the dock throughout the transition.
+const dockContent = document.querySelector(".dock-content");
+new ResizeObserver(() => {
+  $("dock").style.setProperty("--dock-height", Math.ceil(dockContent.getBoundingClientRect().height + 1) + "px");
+}).observe(dockContent);
 
 // ---------- start ----------
 
