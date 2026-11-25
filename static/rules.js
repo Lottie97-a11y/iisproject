@@ -42,7 +42,6 @@ const DARKER_WORDS = ["darker", "darken"];
 const NAMES = { rug: "地毯", cat: "猫", vase: "花瓶", roses: "玫瑰", table: "桌子", window: "窗户", wall: "墙面", floor: "地板" };
 const ALIASES = { rug: ["垫子"], cat: ["小猫"], roses: ["鲜花", "花朵"], table: ["桌面"], window: ["窗子"], wall: ["墙壁", "墙"] };
 const COLOURS = { red:"红", blue:"蓝", green:"绿", yellow:"黄", orange:"橙", purple:"紫", pink:"粉", black:"黑", white:"白", grey:"灰", brown:"棕" };
-const TONES = { lighter:"提亮", darker:"调暗" };
 
 function readInstruction(text, scene) {
   const targets = new Set();
@@ -93,7 +92,7 @@ function readInstruction(text, scene) {
 }
 
 function effectLabel(effect) {
-  return [COLOURS[effect?.colourName], TONES[effect?.tone]].filter(Boolean).join(" · ");
+  return [effect?.colourName, effect?.tone].filter(Boolean).join(" · ");
 }
 
 // Pixel -> object index (or -1) for the whole image, by exact colour.

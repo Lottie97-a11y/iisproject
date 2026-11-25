@@ -4,6 +4,9 @@ const imageCanvas = $("imageCanvas");
 const overlay = $("overlayCanvas");
 const imgCtx = imageCanvas.getContext("2d");
 const ovCtx = overlay.getContext("2d");
+// Brush strokes shown above the pulsing scope preview while the scope is reviewed.
+const strokeCanvas = $("strokeCanvas");
+const strokeCtx = strokeCanvas.getContext("2d");
 const maskCanvas = document.createElement("canvas"); // editable area = opaque pixels
 const maskCtx = maskCanvas.getContext("2d", { willReadFrequently: true });
 
@@ -37,7 +40,7 @@ const state = {
 function loadSample(sample) {
   const img = new Image();
   img.onload = () => {
-    for (const c of [imageCanvas, overlay, maskCanvas]) {
+    for (const c of [imageCanvas, overlay, strokeCanvas, maskCanvas]) {
       c.width = img.naturalWidth;
       c.height = img.naturalHeight;
     }
@@ -104,7 +107,7 @@ function updateMaskInfo() {
   for (let i = 3; i < data.length; i += 4) if (data[i] > 0) editable++;
   state.editableShare = editable / (width * height);
   updateInputGuide();
-  $("maskInfo").textContent = "笔画覆盖 " + (state.editableShare * 100).toFixed(1) + "%";
+  $("maskInfo").textContent = "Brush coverage: " + (state.editableShare * 100).toFixed(1) + "%";
 }
 
 const tintCanvas = document.createElement("canvas"); // painted area, coloured for display
@@ -116,6 +119,7 @@ function renderOverlay() {
   const { width, height } = overlay;
   ovCtx.clearRect(0, 0, width, height);
   ovCtx.globalCompositeOperation = "source-over";
+  strokeCtx.clearRect(0, 0, width, height);
   if (state.step === "result") {
     if (state.outcome && $("showDrift").checked && viewName() !== "original") {
       ovCtx.drawImage(state.outcome.driftLayer, 0, 0);
@@ -123,7 +127,9 @@ function renderOverlay() {
     return;
   }
   if (state.step === "confirm") {
+    // Checked objects are brightened on the overlay; the strokes stay visible on their own layer.
     if (state.preview) ovCtx.putImageData(state.preview, 0, 0);
+    drawTint(strokeCtx);
     return;
   }
   if ($("showLocked").checked) {
@@ -136,6 +142,13 @@ function renderOverlay() {
     drawBrushCursor();
     return;
   }
+  drawTint(ovCtx);
+  drawBrushCursor();
+}
+
+// Painted area tinted blue.
+function drawTint(ctx) {
+  const { width, height } = overlay;
   tintCanvas.width = width;
   tintCanvas.height = height;
   tintCtx.drawImage(maskCanvas, 0, 0);
@@ -143,8 +156,7 @@ function renderOverlay() {
   tintCtx.fillStyle = "rgba(31, 111, 235, 0.38)";
   tintCtx.fillRect(0, 0, width, height);
   tintCtx.globalCompositeOperation = "source-over";
-  ovCtx.drawImage(tintCanvas, 0, 0);
-  drawBrushCursor();
+  ctx.drawImage(tintCanvas, 0, 0);
 }
 
 function drawBrushCursor() {
@@ -217,7 +229,7 @@ function notifyInput(message) {
 function makeCard() {
   if (state.step !== "select" || !state.scene) return;
   const parsed = readInstruction($("instruction").value, state.scene);
-  if (!parsed.options.length) return notifyInput("请描述要修改的颜色或明暗，已有笔画会保留。");
+  if (!parsed.options.length) return notifyInput("Enter a colour or brightness change. Your brush strokes will be kept.");
   const mask = maskCtx.getImageData(0, 0, overlay.width, overlay.height).data;
   const rows = state.scene.objects.map(obj => ({ obj, total: 0, painted: 0, local: 0, whole: 0,
     selected: false, selectionOverride: null, mode: "" }));
@@ -257,8 +269,8 @@ function updateCandidates(parsed) {
     const override = parsed.options.find(effect => effectLabel(effect) === row.effectOverride);
     row.effect = override || inferred;
   }
-  const problem = !parsed.options.length ? "请描述要修改的颜色或明暗，已有笔画会保留。"
-    : !draft.candidates.length ? "请点名一个元素，或至少涂到它的 10%。" : "";
+  const problem = !parsed.options.length ? "Enter a colour or brightness change. Your brush strokes will be kept."
+    : !draft.candidates.length ? "Name an object or paint at least 10% of it." : "";
   if (problem) notifyInput(problem);
   else $("selectMsg").textContent = "";
   showOptions();
@@ -272,7 +284,8 @@ function showOptions() {
   for (const row of candidates) {
     const line = document.createElement("div");
     line.className = "choice-row";
-    const name = NAMES[row.obj.id];
+    const [objectName] = row.obj.words;
+    const name = objectName[0].toUpperCase() + objectName.slice(1);
     const label = document.createElement("label");
     const check = document.createElement("input");
     check.type = "checkbox";
@@ -284,8 +297,8 @@ function showOptions() {
     line.append(label, settings);
     if (!row.effect || effects.length > 1) {
       const select = document.createElement("select");
-      select.setAttribute("aria-label", name + "的效果");
-      select.add(new Option("选择效果", ""));
+      select.setAttribute("aria-label", `Effect for ${objectName}`);
+      select.add(new Option("Choose effect", ""));
       effects.forEach((e, index) => select.add(new Option(effectLabel(e), String(index))));
       select.value = row.effect ? String(effects.indexOf(row.effect)) : "";
       select.onchange = () => {
@@ -299,12 +312,12 @@ function showOptions() {
       effect.textContent = effectLabel(row.effect);
       settings.append(effect);
     }
-    for (const [mode,title] of [["A","局部"],["B","整体"]]) {
+    for (const [mode,title] of [["A","Local"],["B","Whole object"]]) {
       const button = document.createElement("button");
       button.type = "button";
       button.value = mode;
       button.textContent = title;
-      button.setAttribute("aria-label", name + title);
+      button.setAttribute("aria-label", `${title} edit for ${objectName}`);
       button.setAttribute("aria-pressed", String(row.mode === mode));
       button.onclick = () => {
         row.mode = row.mode === mode ? "" : mode;
@@ -317,7 +330,7 @@ function showOptions() {
     }
     if (!row.local) {
       const hint = document.createElement("small");
-      hint.textContent = "局部修改需先涂到可改色区域";
+      hint.textContent = "Paint an editable area to use Local.";
       settings.append(hint);
     }
     const enable = () => {
@@ -345,11 +358,13 @@ function refreshScope() {
   const preview = new ImageData(overlay.width, overlay.height);
   for (let p = 0; p < scope.length; p++) {
     const row = rows[state.objMap[p]];
-    if (!row?.selected || !row.effect || !eligible[p]) continue;
-    if (row.mode !== "B" && !(row.mode === "A" && eligible[p] === 2)) continue;
-    scope[p] = 1;
+    if (!row?.selected || !eligible[p]) continue;
+    // Brighten each checked object: faintly until a scope is chosen, then only its scope.
+    const inScope = row.mode === "B" || (row.mode === "A" && eligible[p] === 2);
+    if (row.mode && !inScope) continue;
+    if (inScope && row.effect) scope[p] = 1;
     const i = p * 4;
-    preview.data[i] = 85; preview.data[i+1] = 255; preview.data[i+2] = 190; preview.data[i+3] = 175;
+    preview.data[i] = 255; preview.data[i+1] = 255; preview.data[i+2] = 255; preview.data[i+3] = inScope ? 150 : 70;
   }
   state.pending = {scope, rows};
   state.preview = preview;
@@ -454,7 +469,7 @@ function enforceLock(raw) {
 
 function reportDrift() {
   const {editedCount, driftCount} = state.outcome;
-  $("driftReport").textContent = `修改 ${editedCount.toLocaleString()} 个像素 · 已还原 ${driftCount.toLocaleString()} 个越界像素`;
+  $("driftReport").textContent = `Pixels edited: ${editedCount.toLocaleString("en")} · Pixels restored outside scope: ${driftCount.toLocaleString("en")}`;
 }
 
 function viewName() {
@@ -475,7 +490,7 @@ function keepResult() {
   state.kept = true;
   document.querySelector('input[name="view"][value="final"]').checked = true;
   showView();
-  $("resultMsg").textContent = "已保留当前结果。";
+  $("resultMsg").textContent = "Result kept.";
 }
 
 // Page 3 -> page 2: undo the edit and return to the mode and edit card, keeping the
@@ -549,8 +564,8 @@ let savedTheme;
 try { savedTheme = localStorage.getItem("iis-theme"); } catch {}
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
-  $("theme").textContent = theme === "dark" ? "切换浅色" : "切换深色";
-  $("theme").setAttribute("aria-label", $("theme").textContent + "主题");
+  $("theme").textContent = theme === "dark" ? "Light mode" : "Dark mode";
+  $("theme").setAttribute("aria-label", `Switch to ${$("theme").textContent.toLowerCase()}`);
 }
 applyTheme(savedTheme || (themeChoice.matches ? "dark" : "light"));
 $("theme").addEventListener("click", () => {

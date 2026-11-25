@@ -1,71 +1,72 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>局部图像编辑</title>
+  <title>Region-locked image editor</title>
   <link rel="stylesheet" href="static/style.css?v=2.1">
 </head>
 <body data-step="select">
   <header class="topbar">
-    <h1><i class="mark" aria-hidden="true"></i>局部图像编辑</h1>
-    <ol id="steps" aria-label="编辑进度">
-      <li data-step="select">输入</li><li data-step="confirm">选择范围</li><li data-step="result">结果</li>
+    <h1><i class="mark" aria-hidden="true"></i>Region-locked image editor</h1>
+    <ol id="steps" aria-label="Editing progress">
+      <li data-step="select">Input</li><li data-step="confirm">Select scope</li><li data-step="result">Result</li>
     </ol>
-    <button id="theme" type="button" aria-label="切换深浅主题">深色模式</button>
+    <button id="theme" type="button" aria-label="Switch theme">Dark mode</button>
   </header>
   <main>
-    <section class="workspace" aria-label="图像操作区">
+    <section class="workspace" aria-label="Image workspace">
       <div class="image-meta">
-        <label for="sample">图像</label>
+        <label for="sample">Image</label>
         <select id="sample"></select><span id="imgInfo"></span>
       </div>
       <div class="viewport">
         <div id="canvasStack">
-          <canvas id="imageCanvas" aria-label="待编辑图像"></canvas>
-          <canvas id="overlayCanvas" aria-label="涂抹或擦除画笔遮罩"></canvas>
+          <canvas id="imageCanvas" aria-label="Image to edit"></canvas>
+          <canvas id="overlayCanvas" aria-label="Paint or erase the edit mask"></canvas>
+          <canvas id="strokeCanvas" aria-hidden="true"></canvas>
         </div>
       </div>
-      <div class="image-footer"><span id="loadMsg" role="status">正在读取图像…</span><span id="maskInfo"></span></div>
+      <div class="image-footer"><span id="loadMsg" role="status">Loading image…</span><span id="maskInfo"></span></div>
     </section>
     <div id="dock">
       <div class="dock-content">
         <section id="selectPanel">
-          <div class="prompt-heading"><label for="instruction">修改提示词</label><span>本地模拟编辑</span></div>
+          <div class="prompt-heading"><label for="instruction">Edit instruction</label><span>Local simulation</span></div>
           <div class="prompt-line">
             <div class="input-wrap">
               <span id="selectMsg" role="alert"></span>
-              <textarea id="instruction" rows="1" placeholder="例如：地毯变蓝、猫变红"></textarea>
+              <textarea id="instruction" rows="1" placeholder="Make the rug blue and the cat red"></textarea>
             </div>
-            <button class="primary" id="makeCard" disabled>选择范围 <span aria-hidden="true">↑</span></button>
+            <button class="primary" id="makeCard" disabled>Select scope <span aria-hidden="true">↑</span></button>
           </div>
           <div id="brushBar">
-            <div class="tools"><button id="modePaint" class="on" aria-pressed="true">画笔</button><button id="modeErase" aria-pressed="false">擦除</button></div>
-            <label for="brushSize">大小</label><input type="range" id="brushSize" min="6" max="80" value="24"><output for="brushSize" id="brushSizeLabel">24 px</output>
-            <button id="clearMask">清空笔画</button>
-            <label class="dim"><input type="checkbox" id="showLocked"> 压暗笔画外区域</label>
+            <div class="tools"><button id="modePaint" class="on" aria-pressed="true">Brush</button><button id="modeErase" aria-pressed="false">Erase</button></div>
+            <label for="brushSize">Size</label><input type="range" id="brushSize" min="6" max="80" value="24"><output for="brushSize" id="brushSizeLabel">24 px</output>
+            <button id="clearMask">Clear strokes</button>
+            <label class="dim"><input type="checkbox" id="showLocked"> Dim unpainted areas</label>
           </div>
         </section>
         <section id="confirmPanel" aria-labelledby="confirmTitle" hidden>
-          <div class="drawer-heading"><h2 id="confirmTitle" tabindex="-1">确认修改范围</h2><span>仅修改勾选的元素</span></div>
-          <div class="choice-head"><span>备选元素</span><span>效果与修改模式</span></div>
+          <div class="drawer-heading"><h2 id="confirmTitle" tabindex="-1">Review edit scope</h2><span>Only selected objects will change</span></div>
+          <div class="choice-head"><span>Objects</span><span>Effect and scope</span></div>
           <div id="card"></div>
-          <div class="actions"><button id="backBtn">返回输入</button><button class="primary" id="confirmBtn" disabled>应用修改</button></div>
+          <div class="actions"><button id="backBtn">Back to input</button><button class="primary" id="confirmBtn" disabled>Apply edits</button></div>
         </section>
         <section id="resultPanel" aria-labelledby="resultTitle" hidden>
-          <div class="drawer-heading"><h2 id="resultTitle" tabindex="-1">编辑结果</h2><span id="driftReport" role="status"></span></div>
-          <div class="result-tools"><fieldset><legend>图像对比</legend>
-            <label><input type="radio" name="view" value="final" checked> 最终图</label>
-            <label><input type="radio" name="view" value="raw"> 模拟输出</label>
-            <label><input type="radio" name="view" value="original"> 原图</label>
-          </fieldset><label><input type="checkbox" id="showDrift"> 对比轮廓</label><span>红色为修改，绿色为还原</span></div>
-          <div class="actions"><span id="resultMsg" role="status"></span><button id="restartBtn">重新开始</button><button id="undoBtn">返回选择</button><button class="primary" id="keepBtn">保留结果</button></div>
+          <div class="drawer-heading"><h2 id="resultTitle" tabindex="-1">Edit result</h2><span id="driftReport" role="status"></span></div>
+          <div class="result-tools"><fieldset><legend>Compare images</legend>
+            <label><input type="radio" name="view" value="final" checked> Final</label>
+            <label><input type="radio" name="view" value="raw"> Simulated output</label>
+            <label><input type="radio" name="view" value="original"> Original</label>
+          </fieldset><label><input type="checkbox" id="showDrift"> Show outlines</label><span>Red shows edits. Green shows restored areas.</span></div>
+          <div class="actions"><span id="resultMsg" role="status"></span><button id="restartBtn">Start over</button><button id="undoBtn">Back to selection</button><button class="primary" id="keepBtn">Keep result</button></div>
         </section>
       </div>
     </div>
   </main>
   <script src="static/samples.js"></script>
-  <script src="static/rules.js?v=2.0"></script>
-  <script src="static/app.js?v=2.1"></script>
+  <script src="static/rules.js?v=2.1-en"></script>
+  <script src="static/app.js?v=2.1-en"></script>
 </body>
 </html>
