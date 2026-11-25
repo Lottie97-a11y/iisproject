@@ -1,0 +1,2157 @@
+{
+  "checks": [
+    {
+      "g": "页面与画笔",
+      "s": "直接打开本地房间示例",
+      "t": "原图分辨率",
+      "expected": "[640,480]",
+      "actual": "[640,480]",
+      "pass": true,
+      "id": 1
+    },
+    {
+      "g": "页面与画笔",
+      "s": "直接打开本地房间示例",
+      "t": "界面语言",
+      "expected": "\"en\"",
+      "actual": "\"en\"",
+      "pass": true,
+      "id": 2
+    },
+    {
+      "g": "页面与画笔",
+      "s": "直接打开本地房间示例",
+      "t": "本地加载的应用资源",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 3
+    },
+    {
+      "g": "页面与画笔",
+      "s": "直接打开本地房间示例",
+      "t": "初始画笔大小",
+      "expected": "\"24 px\"",
+      "actual": "\"24 px\"",
+      "pass": true,
+      "id": 4
+    },
+    {
+      "g": "页面与画笔",
+      "s": "真实鼠标在猫背划一笔",
+      "t": "笔画中心遮罩不透明",
+      "expected": "255",
+      "actual": "255",
+      "pass": true,
+      "id": 5
+    },
+    {
+      "g": "页面与画笔",
+      "s": "真实鼠标在猫背划一笔",
+      "t": "整图覆盖率上升",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 6
+    },
+    {
+      "g": "页面与画笔",
+      "s": "真实鼠标在猫背划一笔",
+      "t": "未涂区域显示压暗层",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 7
+    },
+    {
+      "g": "页面与画笔",
+      "s": "真实鼠标在猫背划一笔",
+      "t": "擦除按钮状态",
+      "expected": "\"true\"",
+      "actual": "\"true\"",
+      "pass": true,
+      "id": 8
+    },
+    {
+      "g": "页面与画笔",
+      "s": "真实鼠标在猫背划一笔",
+      "t": "擦除后笔画中心透明",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 9
+    },
+    {
+      "g": "页面与画笔",
+      "s": "真实鼠标在猫背划一笔",
+      "t": "笔径更改同步到界面",
+      "expected": "\"6 px\"",
+      "actual": "\"6 px\"",
+      "pass": true,
+      "id": 10
+    },
+    {
+      "g": "页面与画笔",
+      "s": "真实鼠标在猫背划一笔",
+      "t": "清空后整图覆盖率归零",
+      "expected": "\"Brush coverage: 0.0%\"",
+      "actual": "\"Brush coverage: 0.0%\"",
+      "pass": true,
+      "id": 11
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "make the rug blue",
+      "t": "候选对象",
+      "expected": "[\"rug\"]",
+      "actual": "[\"rug\"]",
+      "pass": true,
+      "id": 12
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "make the rug blue",
+      "t": "所选效果",
+      "expected": "\"blue\"",
+      "actual": "\"blue\"",
+      "pass": true,
+      "id": 13
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "make the rug blue",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 14
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "make the rug blue",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 15
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "make the rug blue",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[29569,19690]",
+      "actual": "[29569,19690]",
+      "pass": true,
+      "id": 16
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "CARPET GRAY",
+      "t": "候选对象",
+      "expected": "[\"rug\"]",
+      "actual": "[\"rug\"]",
+      "pass": true,
+      "id": 17
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "CARPET GRAY",
+      "t": "所选效果",
+      "expected": "\"grey\"",
+      "actual": "\"grey\"",
+      "pass": true,
+      "id": 18
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "CARPET GRAY",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 19
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "CARPET GRAY",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 20
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "CARPET GRAY",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[29569,19690]",
+      "actual": "[29569,19690]",
+      "pass": true,
+      "id": 21
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "mat grey",
+      "t": "候选对象",
+      "expected": "[\"rug\"]",
+      "actual": "[\"rug\"]",
+      "pass": true,
+      "id": 22
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "mat grey",
+      "t": "所选效果",
+      "expected": "\"grey\"",
+      "actual": "\"grey\"",
+      "pass": true,
+      "id": 23
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "mat grey",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 24
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "mat grey",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 25
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "mat grey",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[29569,19690]",
+      "actual": "[29569,19690]",
+      "pass": true,
+      "id": 26
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "小猫变红",
+      "t": "候选对象",
+      "expected": "[\"cat\"]",
+      "actual": "[\"cat\"]",
+      "pass": true,
+      "id": 27
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "小猫变红",
+      "t": "所选效果",
+      "expected": "\"red\"",
+      "actual": "\"red\"",
+      "pass": true,
+      "id": 28
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "小猫变红",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 29
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "小猫变红",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 30
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "小猫变红",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[12877,6813]",
+      "actual": "[12877,6813]",
+      "pass": true,
+      "id": 31
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "kitten brighter",
+      "t": "候选对象",
+      "expected": "[\"cat\"]",
+      "actual": "[\"cat\"]",
+      "pass": true,
+      "id": 32
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "kitten brighter",
+      "t": "所选效果",
+      "expected": "\"lighter\"",
+      "actual": "\"lighter\"",
+      "pass": true,
+      "id": 33
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "kitten brighter",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 34
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "kitten brighter",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 35
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "kitten brighter",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[12877,6813]",
+      "actual": "[12877,6813]",
+      "pass": true,
+      "id": 36
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "花瓶变紫",
+      "t": "候选对象",
+      "expected": "[\"vase\"]",
+      "actual": "[\"vase\"]",
+      "pass": true,
+      "id": 37
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "花瓶变紫",
+      "t": "所选效果",
+      "expected": "\"purple\"",
+      "actual": "\"purple\"",
+      "pass": true,
+      "id": 38
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "花瓶变紫",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 39
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "花瓶变紫",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 40
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "花瓶变紫",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[4501,12877]",
+      "actual": "[4501,12877]",
+      "pass": true,
+      "id": 41
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "flower pink",
+      "t": "候选对象",
+      "expected": "[\"roses\"]",
+      "actual": "[\"roses\"]",
+      "pass": true,
+      "id": 42
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "flower pink",
+      "t": "所选效果",
+      "expected": "\"pink\"",
+      "actual": "\"pink\"",
+      "pass": true,
+      "id": 43
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "flower pink",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 44
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "flower pink",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 45
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "flower pink",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[1970,12877]",
+      "actual": "[1970,12877]",
+      "pass": true,
+      "id": 46
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "玫瑰变黄",
+      "t": "候选对象",
+      "expected": "[\"roses\"]",
+      "actual": "[\"roses\"]",
+      "pass": true,
+      "id": 47
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "玫瑰变黄",
+      "t": "所选效果",
+      "expected": "\"yellow\"",
+      "actual": "\"yellow\"",
+      "pass": true,
+      "id": 48
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "玫瑰变黄",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 49
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "玫瑰变黄",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 50
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "玫瑰变黄",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[1970,12877]",
+      "actual": "[1970,12877]",
+      "pass": true,
+      "id": 51
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "桌面变棕",
+      "t": "候选对象",
+      "expected": "[\"table\"]",
+      "actual": "[\"table\"]",
+      "pass": true,
+      "id": 52
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "桌面变棕",
+      "t": "所选效果",
+      "expected": "\"brown\"",
+      "actual": "\"brown\"",
+      "pass": true,
+      "id": 53
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "桌面变棕",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 54
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "桌面变棕",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 55
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "桌面变棕",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[7258,19690]",
+      "actual": "[7258,19690]",
+      "pass": true,
+      "id": 56
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "窗子变黑",
+      "t": "候选对象",
+      "expected": "[\"window\"]",
+      "actual": "[\"window\"]",
+      "pass": true,
+      "id": 57
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "窗子变黑",
+      "t": "所选效果",
+      "expected": "\"black\"",
+      "actual": "\"black\"",
+      "pass": true,
+      "id": 58
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "窗子变黑",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 59
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "窗子变黑",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 60
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "窗子变黑",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[22701,19690]",
+      "actual": "[22701,19690]",
+      "pass": true,
+      "id": 61
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "墙壁变白",
+      "t": "候选对象",
+      "expected": "[\"wall\"]",
+      "actual": "[\"wall\"]",
+      "pass": true,
+      "id": 62
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "墙壁变白",
+      "t": "所选效果",
+      "expected": "\"white\"",
+      "actual": "\"white\"",
+      "pass": true,
+      "id": 63
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "墙壁变白",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 64
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "墙壁变白",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 65
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "墙壁变白",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[156209,19690]",
+      "actual": "[156209,19690]",
+      "pass": true,
+      "id": 66
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "地板变橙",
+      "t": "候选对象",
+      "expected": "[\"floor\"]",
+      "actual": "[\"floor\"]",
+      "pass": true,
+      "id": 67
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "地板变橙",
+      "t": "所选效果",
+      "expected": "\"orange\"",
+      "actual": "\"orange\"",
+      "pass": true,
+      "id": 68
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "地板变橙",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 69
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "地板变橙",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 70
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "地板变橙",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[71454,19690]",
+      "actual": "[71454,19690]",
+      "pass": true,
+      "id": 71
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "darken the floor",
+      "t": "候选对象",
+      "expected": "[\"floor\"]",
+      "actual": "[\"floor\"]",
+      "pass": true,
+      "id": 72
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "darken the floor",
+      "t": "所选效果",
+      "expected": "\"darker\"",
+      "actual": "\"darker\"",
+      "pass": true,
+      "id": 73
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "darken the floor",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 74
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "darken the floor",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 75
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "darken the floor",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[71454,19690]",
+      "actual": "[71454,19690]",
+      "pass": true,
+      "id": 76
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "地毯变绿、提亮",
+      "t": "候选对象",
+      "expected": "[\"rug\"]",
+      "actual": "[\"rug\"]",
+      "pass": true,
+      "id": 77
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "地毯变绿、提亮",
+      "t": "所选效果",
+      "expected": "\"green · lighter\"",
+      "actual": "\"green\"",
+      "pass": false,
+      "id": 78
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "地毯变绿、提亮",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "29569",
+      "pass": false,
+      "id": 79
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "地毯变绿、提亮",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 80
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "地毯变绿、提亮",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[29569,19690]",
+      "actual": "[29569,19690]",
+      "pass": true,
+      "id": 81
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "地毯变绿并提亮",
+      "t": "候选对象",
+      "expected": "[\"rug\"]",
+      "actual": "[\"rug\"]",
+      "pass": true,
+      "id": 82
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "地毯变绿并提亮",
+      "t": "所选效果",
+      "expected": "\"green · lighter\"",
+      "actual": "\"green · lighter\"",
+      "pass": true,
+      "id": 83
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "地毯变绿并提亮",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 84
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "地毯变绿并提亮",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 85
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "地毯变绿并提亮",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[29569,19690]",
+      "actual": "[29569,19690]",
+      "pass": true,
+      "id": 86
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "make the rug green and brighter",
+      "t": "候选对象",
+      "expected": "[\"rug\"]",
+      "actual": "[\"rug\"]",
+      "pass": true,
+      "id": 87
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "make the rug green and brighter",
+      "t": "所选效果",
+      "expected": "\"green · lighter\"",
+      "actual": "\"green · lighter\"",
+      "pass": true,
+      "id": 88
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "make the rug green and brighter",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 89
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "make the rug green and brighter",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 90
+    },
+    {
+      "g": "指令与整体编辑",
+      "s": "make the rug green and brighter",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[29569,19690]",
+      "actual": "[29569,19690]",
+      "pass": true,
+      "id": 91
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "rug：涂 37 个可编辑像素，输入 rug blue",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 92
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "rug：涂 37 个可编辑像素，输入 rug blue",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 93
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "rug：涂 37 个可编辑像素，输入 rug blue",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[37,19690]",
+      "actual": "[37,19690]",
+      "pass": true,
+      "id": 94
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "rug：涂 37 个可编辑像素，输入 rug blue",
+      "t": "实际变色的像素数",
+      "expected": "37",
+      "actual": "37",
+      "pass": true,
+      "id": 95
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "cat：涂 37 个可编辑像素，输入 cat blue",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 96
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "cat：涂 37 个可编辑像素，输入 cat blue",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 97
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "cat：涂 37 个可编辑像素，输入 cat blue",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[37,6813]",
+      "actual": "[37,6813]",
+      "pass": true,
+      "id": 98
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "cat：涂 37 个可编辑像素，输入 cat blue",
+      "t": "实际变色的像素数",
+      "expected": "37",
+      "actual": "37",
+      "pass": true,
+      "id": 99
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "vase：涂 37 个可编辑像素，输入 vase blue",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 100
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "vase：涂 37 个可编辑像素，输入 vase blue",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 101
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "vase：涂 37 个可编辑像素，输入 vase blue",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[37,12877]",
+      "actual": "[37,12877]",
+      "pass": true,
+      "id": 102
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "vase：涂 37 个可编辑像素，输入 vase blue",
+      "t": "实际变色的像素数",
+      "expected": "37",
+      "actual": "37",
+      "pass": true,
+      "id": 103
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "roses：涂 37 个可编辑像素，输入 roses blue",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 104
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "roses：涂 37 个可编辑像素，输入 roses blue",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 105
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "roses：涂 37 个可编辑像素，输入 roses blue",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[37,12877]",
+      "actual": "[37,12877]",
+      "pass": true,
+      "id": 106
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "roses：涂 37 个可编辑像素，输入 roses blue",
+      "t": "实际变色的像素数",
+      "expected": "37",
+      "actual": "37",
+      "pass": true,
+      "id": 107
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "table：涂 37 个可编辑像素，输入 table blue",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 108
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "table：涂 37 个可编辑像素，输入 table blue",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 109
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "table：涂 37 个可编辑像素，输入 table blue",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[37,19690]",
+      "actual": "[37,19690]",
+      "pass": true,
+      "id": 110
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "table：涂 37 个可编辑像素，输入 table blue",
+      "t": "实际变色的像素数",
+      "expected": "37",
+      "actual": "37",
+      "pass": true,
+      "id": 111
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "window：涂 37 个可编辑像素，输入 window blue",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 112
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "window：涂 37 个可编辑像素，输入 window blue",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 113
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "window：涂 37 个可编辑像素，输入 window blue",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[37,19690]",
+      "actual": "[37,19690]",
+      "pass": true,
+      "id": 114
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "window：涂 37 个可编辑像素，输入 window blue",
+      "t": "实际变色的像素数",
+      "expected": "37",
+      "actual": "37",
+      "pass": true,
+      "id": 115
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "wall：涂 37 个可编辑像素，输入 wall blue",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 116
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "wall：涂 37 个可编辑像素，输入 wall blue",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 117
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "wall：涂 37 个可编辑像素，输入 wall blue",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[37,19690]",
+      "actual": "[37,19690]",
+      "pass": true,
+      "id": 118
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "wall：涂 37 个可编辑像素，输入 wall blue",
+      "t": "实际变色的像素数",
+      "expected": "37",
+      "actual": "37",
+      "pass": true,
+      "id": 119
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "floor：涂 37 个可编辑像素，输入 floor blue",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 120
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "floor：涂 37 个可编辑像素，输入 floor blue",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 121
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "floor：涂 37 个可编辑像素，输入 floor blue",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[37,19690]",
+      "actual": "[37,19690]",
+      "pass": true,
+      "id": 122
+    },
+    {
+      "g": "逐对象局部编辑",
+      "s": "floor：涂 37 个可编辑像素，输入 floor blue",
+      "t": "实际变色的像素数",
+      "expected": "37",
+      "actual": "37",
+      "pass": true,
+      "id": 123
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "rug：覆盖 2956/29569 个像素，仅输入 blue",
+      "t": "10% 边界的候选列表",
+      "expected": "[]",
+      "actual": "[]",
+      "pass": true,
+      "id": 124
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "rug：覆盖 2956/29569 个像素，仅输入 blue",
+      "t": "能否进入范围选择",
+      "expected": "\"select\"",
+      "actual": "\"select\"",
+      "pass": true,
+      "id": 125
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "rug：覆盖 2957/29569 个像素，仅输入 blue",
+      "t": "10% 边界的候选列表",
+      "expected": "[\"rug\"]",
+      "actual": "[\"rug\"]",
+      "pass": true,
+      "id": 126
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "rug：覆盖 2957/29569 个像素，仅输入 blue",
+      "t": "能否进入范围选择",
+      "expected": "\"confirm\"",
+      "actual": "\"confirm\"",
+      "pass": true,
+      "id": 127
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "cat：覆盖 1319/13196 个像素，仅输入 blue",
+      "t": "10% 边界的候选列表",
+      "expected": "[]",
+      "actual": "[]",
+      "pass": true,
+      "id": 128
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "cat：覆盖 1319/13196 个像素，仅输入 blue",
+      "t": "能否进入范围选择",
+      "expected": "\"select\"",
+      "actual": "\"select\"",
+      "pass": true,
+      "id": 129
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "cat：覆盖 1320/13196 个像素，仅输入 blue",
+      "t": "10% 边界的候选列表",
+      "expected": "[\"cat\"]",
+      "actual": "[\"cat\"]",
+      "pass": true,
+      "id": 130
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "cat：覆盖 1320/13196 个像素，仅输入 blue",
+      "t": "能否进入范围选择",
+      "expected": "\"confirm\"",
+      "actual": "\"confirm\"",
+      "pass": true,
+      "id": 131
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "vase：覆盖 450/4501 个像素，仅输入 blue",
+      "t": "10% 边界的候选列表",
+      "expected": "[]",
+      "actual": "[]",
+      "pass": true,
+      "id": 132
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "vase：覆盖 450/4501 个像素，仅输入 blue",
+      "t": "能否进入范围选择",
+      "expected": "\"select\"",
+      "actual": "\"select\"",
+      "pass": true,
+      "id": 133
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "vase：覆盖 451/4501 个像素，仅输入 blue",
+      "t": "10% 边界的候选列表",
+      "expected": "[\"vase\"]",
+      "actual": "[\"vase\"]",
+      "pass": true,
+      "id": 134
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "vase：覆盖 451/4501 个像素，仅输入 blue",
+      "t": "能否进入范围选择",
+      "expected": "\"confirm\"",
+      "actual": "\"confirm\"",
+      "pass": true,
+      "id": 135
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "roses：覆盖 231/2312 个像素，仅输入 blue",
+      "t": "10% 边界的候选列表",
+      "expected": "[]",
+      "actual": "[]",
+      "pass": true,
+      "id": 136
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "roses：覆盖 231/2312 个像素，仅输入 blue",
+      "t": "能否进入范围选择",
+      "expected": "\"select\"",
+      "actual": "\"select\"",
+      "pass": true,
+      "id": 137
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "roses：覆盖 232/2312 个像素，仅输入 blue",
+      "t": "10% 边界的候选列表",
+      "expected": "[\"roses\"]",
+      "actual": "[\"roses\"]",
+      "pass": true,
+      "id": 138
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "roses：覆盖 232/2312 个像素，仅输入 blue",
+      "t": "能否进入范围选择",
+      "expected": "\"confirm\"",
+      "actual": "\"confirm\"",
+      "pass": true,
+      "id": 139
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "table：覆盖 725/7258 个像素，仅输入 blue",
+      "t": "10% 边界的候选列表",
+      "expected": "[]",
+      "actual": "[]",
+      "pass": true,
+      "id": 140
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "table：覆盖 725/7258 个像素，仅输入 blue",
+      "t": "能否进入范围选择",
+      "expected": "\"select\"",
+      "actual": "\"select\"",
+      "pass": true,
+      "id": 141
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "table：覆盖 726/7258 个像素，仅输入 blue",
+      "t": "10% 边界的候选列表",
+      "expected": "[\"table\"]",
+      "actual": "[\"table\"]",
+      "pass": true,
+      "id": 142
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "table：覆盖 726/7258 个像素，仅输入 blue",
+      "t": "能否进入范围选择",
+      "expected": "\"confirm\"",
+      "actual": "\"confirm\"",
+      "pass": true,
+      "id": 143
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "window：覆盖 2270/22701 个像素，仅输入 blue",
+      "t": "10% 边界的候选列表",
+      "expected": "[]",
+      "actual": "[]",
+      "pass": true,
+      "id": 144
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "window：覆盖 2270/22701 个像素，仅输入 blue",
+      "t": "能否进入范围选择",
+      "expected": "\"select\"",
+      "actual": "\"select\"",
+      "pass": true,
+      "id": 145
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "window：覆盖 2271/22701 个像素，仅输入 blue",
+      "t": "10% 边界的候选列表",
+      "expected": "[\"window\"]",
+      "actual": "[\"window\"]",
+      "pass": true,
+      "id": 146
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "window：覆盖 2271/22701 个像素，仅输入 blue",
+      "t": "能否进入范围选择",
+      "expected": "\"confirm\"",
+      "actual": "\"confirm\"",
+      "pass": true,
+      "id": 147
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "wall：覆盖 15620/156209 个像素，仅输入 blue",
+      "t": "10% 边界的候选列表",
+      "expected": "[]",
+      "actual": "[]",
+      "pass": true,
+      "id": 148
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "wall：覆盖 15620/156209 个像素，仅输入 blue",
+      "t": "能否进入范围选择",
+      "expected": "\"select\"",
+      "actual": "\"select\"",
+      "pass": true,
+      "id": 149
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "wall：覆盖 15621/156209 个像素，仅输入 blue",
+      "t": "10% 边界的候选列表",
+      "expected": "[\"wall\"]",
+      "actual": "[\"wall\"]",
+      "pass": true,
+      "id": 150
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "wall：覆盖 15621/156209 个像素，仅输入 blue",
+      "t": "能否进入范围选择",
+      "expected": "\"confirm\"",
+      "actual": "\"confirm\"",
+      "pass": true,
+      "id": 151
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "floor：覆盖 7145/71454 个像素，仅输入 blue",
+      "t": "10% 边界的候选列表",
+      "expected": "[]",
+      "actual": "[]",
+      "pass": true,
+      "id": 152
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "floor：覆盖 7145/71454 个像素，仅输入 blue",
+      "t": "能否进入范围选择",
+      "expected": "\"select\"",
+      "actual": "\"select\"",
+      "pass": true,
+      "id": 153
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "floor：覆盖 7146/71454 个像素，仅输入 blue",
+      "t": "10% 边界的候选列表",
+      "expected": "[\"floor\"]",
+      "actual": "[\"floor\"]",
+      "pass": true,
+      "id": 154
+    },
+    {
+      "g": "对象候选阈值",
+      "s": "floor：覆盖 7146/71454 个像素，仅输入 blue",
+      "t": "能否进入范围选择",
+      "expected": "\"confirm\"",
+      "actual": "\"confirm\"",
+      "pass": true,
+      "id": 155
+    },
+    {
+      "g": "输入与范围确认",
+      "s": "只有对象名称或没有目标",
+      "t": "缺少效果时的提示",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 156
+    },
+    {
+      "g": "输入与范围确认",
+      "s": "只有对象名称或没有目标",
+      "t": "缺少对象时的提示",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 157
+    },
+    {
+      "g": "输入与范围确认",
+      "s": "只圈中猫的眼睛，输入 make the cat blue",
+      "t": "局部按钮禁用",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 158
+    },
+    {
+      "g": "输入与范围确认",
+      "s": "只圈中猫的眼睛，输入 make the cat blue",
+      "t": "未指定有效范围时阻止提交",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 159
+    },
+    {
+      "g": "输入与范围确认",
+      "s": "只圈中猫的眼睛，输入 make the cat blue",
+      "t": "整体仍然可选",
+      "expected": "false",
+      "actual": "false",
+      "pass": true,
+      "id": 160
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "两项效果顺序",
+      "expected": "[\"blue\",\"red\"]",
+      "actual": "[\"blue\",\"red\"]",
+      "pass": true,
+      "id": 161
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "另一个对象缺少范围时阻止提交",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 162
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "确认页继续编辑指令",
+      "expected": "false",
+      "actual": "false",
+      "pass": true,
+      "id": 163
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "确认页锁定画笔",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 164
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "预览高亮与预期范围不符的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 165
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 166
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 167
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[29639,6813]",
+      "actual": "[29639,6813]",
+      "pass": true,
+      "id": 168
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "轮廓包含编辑和还原两类颜色",
+      "expected": "[true,true]",
+      "actual": "[true,true]",
+      "pass": true,
+      "id": 169
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "原图视图与初始图完全相同",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 170
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "原图隐藏轮廓",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 171
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "保留后切到最终图",
+      "expected": "\"final\"",
+      "actual": "\"final\"",
+      "pass": true,
+      "id": 172
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "保留反馈",
+      "expected": "\"Result kept.\"",
+      "actual": "\"Result kept.\"",
+      "pass": true,
+      "id": 173
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "返回后仍选中猫的局部范围",
+      "expected": "\"true\"",
+      "actual": "\"true\"",
+      "pass": true,
+      "id": 174
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "返回后仍选中整张地毯",
+      "expected": "\"true\"",
+      "actual": "\"true\"",
+      "pass": true,
+      "id": 175
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "手动更换单个对象效果",
+      "expected": "\"red\"",
+      "actual": "\"red\"",
+      "pass": true,
+      "id": 176
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "取消勾选会禁用该对象的设置",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 177
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "更新指令后重新推断地毯效果",
+      "expected": "\"green\"",
+      "actual": "\"green\"",
+      "pass": true,
+      "id": 178
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "t": "手动取消勾选在更新指令后保留",
+      "expected": "false",
+      "actual": "false",
+      "pass": true,
+      "id": 179
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "改写为地毯变绿、猫变黄；取消猫并保留整张地毯",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 180
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "改写为地毯变绿、猫变黄；取消猫并保留整张地毯",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 181
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "改写为地毯变绿、猫变黄；取消猫并保留整张地毯",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[29569,19690]",
+      "actual": "[29569,19690]",
+      "pass": true,
+      "id": 182
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "改写为地毯变绿、猫变黄；取消猫并保留整张地毯",
+      "t": "重新开始后恢复输入步骤",
+      "expected": "\"select\"",
+      "actual": "\"select\"",
+      "pass": true,
+      "id": 183
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "改写为地毯变绿、猫变黄；取消猫并保留整张地毯",
+      "t": "重新开始后清空遮罩",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 184
+    },
+    {
+      "g": "混合范围与结果",
+      "s": "改写为地毯变绿、猫变黄；取消猫并保留整张地毯",
+      "t": "重新开始后保留指令",
+      "expected": "\"地毯变绿、猫变黄\"",
+      "actual": "\"地毯变绿、猫变黄\"",
+      "pass": true,
+      "id": 185
+    },
+    {
+      "g": "旧报告场景复核",
+      "s": "只要求地毯变蓝，另轻擦猫毛 60 像素",
+      "t": "猫未到阈值，只有地毯入选",
+      "expected": "[\"rug\"]",
+      "actual": "[\"rug\"]",
+      "pass": true,
+      "id": 186
+    },
+    {
+      "g": "旧报告场景复核",
+      "s": "只要求地毯变蓝，另轻擦猫毛 60 像素",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 187
+    },
+    {
+      "g": "旧报告场景复核",
+      "s": "只要求地毯变蓝，另轻擦猫毛 60 像素",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 188
+    },
+    {
+      "g": "旧报告场景复核",
+      "s": "只要求地毯变蓝，另轻擦猫毛 60 像素",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[5000,19690]",
+      "actual": "[5000,19690]",
+      "pass": true,
+      "id": 189
+    },
+    {
+      "g": "旧报告场景复核",
+      "s": "只要求地毯变蓝，另轻擦猫毛 60 像素",
+      "t": "猫的所有像素均受到保护",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 190
+    },
+    {
+      "g": "旧报告场景复核",
+      "s": "点名地毯、猫、花瓶，仅勾选地毯",
+      "t": "未勾选猫，模拟输出仍将猫变灰",
+      "expected": "[150,150,156]",
+      "actual": "[150,150,156]",
+      "pass": true,
+      "id": 191
+    },
+    {
+      "g": "旧报告场景复核",
+      "s": "点名地毯、猫、花瓶，仅勾选地毯",
+      "t": "未勾选花瓶，模拟输出仍会抹去花瓶",
+      "expected": "[236,226,208]",
+      "actual": "[236,226,208]",
+      "pass": true,
+      "id": 192
+    },
+    {
+      "g": "旧报告场景复核",
+      "s": "点名地毯、猫、花瓶，仅勾选地毯",
+      "t": "范围内颜色或透明度错误的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 193
+    },
+    {
+      "g": "旧报告场景复核",
+      "s": "点名地毯、猫、花瓶，仅勾选地毯",
+      "t": "范围外与原图不同的像素数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 194
+    },
+    {
+      "g": "旧报告场景复核",
+      "s": "点名地毯、猫、花瓶，仅勾选地毯",
+      "t": "界面编辑数、还原数与独立统计一致",
+      "expected": "[29569,19690]",
+      "actual": "[29569,19690]",
+      "pass": true,
+      "id": 195
+    },
+    {
+      "g": "旧报告场景复核",
+      "s": "整图覆盖率和对象阈值使用不同分母",
+      "t": "画布下方显示整图覆盖率",
+      "expected": "\"Brush coverage: 2.3%\"",
+      "actual": "\"Brush coverage: 2.3%\"",
+      "pass": true,
+      "id": 196
+    },
+    {
+      "g": "旧报告场景复核",
+      "s": "整图覆盖率和对象阈值使用不同分母",
+      "t": "未达对象门槛时显示 10% 提示",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 197
+    },
+    {
+      "g": "布局与显示",
+      "s": "360px 宽 · select",
+      "t": "页面及底部面板可在视口内横向完整显示",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 198
+    },
+    {
+      "g": "布局与显示",
+      "s": "360px 宽 · select",
+      "t": "当前可见步骤",
+      "expected": "\"select\"",
+      "actual": "\"select\"",
+      "pass": true,
+      "id": 199
+    },
+    {
+      "g": "布局与显示",
+      "s": "360px 宽 · confirm",
+      "t": "页面及底部面板可在视口内横向完整显示",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 200
+    },
+    {
+      "g": "布局与显示",
+      "s": "360px 宽 · confirm",
+      "t": "当前可见步骤",
+      "expected": "\"confirm\"",
+      "actual": "\"confirm\"",
+      "pass": true,
+      "id": 201
+    },
+    {
+      "g": "布局与显示",
+      "s": "360px 宽 · result",
+      "t": "页面及底部面板可在视口内横向完整显示",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 202
+    },
+    {
+      "g": "布局与显示",
+      "s": "360px 宽 · result",
+      "t": "当前可见步骤",
+      "expected": "\"result\"",
+      "actual": "\"result\"",
+      "pass": true,
+      "id": 203
+    },
+    {
+      "g": "布局与显示",
+      "s": "1150px 宽 · select",
+      "t": "页面及底部面板可在视口内横向完整显示",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 204
+    },
+    {
+      "g": "布局与显示",
+      "s": "1150px 宽 · select",
+      "t": "当前可见步骤",
+      "expected": "\"select\"",
+      "actual": "\"select\"",
+      "pass": true,
+      "id": 205
+    },
+    {
+      "g": "布局与显示",
+      "s": "1150px 宽 · confirm",
+      "t": "页面及底部面板可在视口内横向完整显示",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 206
+    },
+    {
+      "g": "布局与显示",
+      "s": "1150px 宽 · confirm",
+      "t": "当前可见步骤",
+      "expected": "\"confirm\"",
+      "actual": "\"confirm\"",
+      "pass": true,
+      "id": 207
+    },
+    {
+      "g": "布局与显示",
+      "s": "1150px 宽 · result",
+      "t": "页面及底部面板可在视口内横向完整显示",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 208
+    },
+    {
+      "g": "布局与显示",
+      "s": "1150px 宽 · result",
+      "t": "当前可见步骤",
+      "expected": "\"result\"",
+      "actual": "\"result\"",
+      "pass": true,
+      "id": 209
+    },
+    {
+      "g": "布局与显示",
+      "s": "系统偏好减少动态效果",
+      "t": "范围预览关闭动画",
+      "expected": "\"none\"",
+      "actual": "\"none\"",
+      "pass": true,
+      "id": 210
+    },
+    {
+      "g": "布局与显示",
+      "s": "切换主题",
+      "t": "深浅主题切换",
+      "expected": "true",
+      "actual": "true",
+      "pass": true,
+      "id": 211
+    },
+    {
+      "g": "布局与显示",
+      "s": "切换主题",
+      "t": "主题选择写入本地存储",
+      "expected": "\"dark\"",
+      "actual": "\"dark\"",
+      "pass": true,
+      "id": 212
+    },
+    {
+      "g": "布局与显示",
+      "s": "切换主题",
+      "t": "未捕获的页面异常数",
+      "expected": "0",
+      "actual": "0",
+      "pass": true,
+      "id": 213
+    }
+  ],
+  "runs": [
+    {
+      "scenario": "make the rug blue",
+      "allowed": 29569,
+      "edits": 29569,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "CARPET GRAY",
+      "allowed": 29569,
+      "edits": 29569,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "mat grey",
+      "allowed": 29569,
+      "edits": 29569,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "小猫变红",
+      "allowed": 12877,
+      "edits": 12877,
+      "rest": 6813,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "kitten brighter",
+      "allowed": 12877,
+      "edits": 12877,
+      "rest": 6813,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "花瓶变紫",
+      "allowed": 4501,
+      "edits": 4501,
+      "rest": 12877,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "flower pink",
+      "allowed": 1970,
+      "edits": 1970,
+      "rest": 12877,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "玫瑰变黄",
+      "allowed": 1970,
+      "edits": 1970,
+      "rest": 12877,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "桌面变棕",
+      "allowed": 7258,
+      "edits": 7258,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "窗子变黑",
+      "allowed": 22701,
+      "edits": 22701,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "墙壁变白",
+      "allowed": 156209,
+      "edits": 156209,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "地板变橙",
+      "allowed": 71454,
+      "edits": 71454,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "darken the floor",
+      "allowed": 71454,
+      "edits": 71454,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "地毯变绿、提亮",
+      "allowed": 29569,
+      "edits": 29569,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 29569
+    },
+    {
+      "scenario": "地毯变绿并提亮",
+      "allowed": 29569,
+      "edits": 29569,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "make the rug green and brighter",
+      "allowed": 29569,
+      "edits": 29569,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "rug：涂 37 个可编辑像素，输入 rug blue",
+      "allowed": 37,
+      "edits": 37,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "cat：涂 37 个可编辑像素，输入 cat blue",
+      "allowed": 37,
+      "edits": 37,
+      "rest": 6813,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "vase：涂 37 个可编辑像素，输入 vase blue",
+      "allowed": 37,
+      "edits": 37,
+      "rest": 12877,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "roses：涂 37 个可编辑像素，输入 roses blue",
+      "allowed": 37,
+      "edits": 37,
+      "rest": 12877,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "table：涂 37 个可编辑像素，输入 table blue",
+      "allowed": 37,
+      "edits": 37,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "window：涂 37 个可编辑像素，输入 window blue",
+      "allowed": 37,
+      "edits": 37,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "wall：涂 37 个可编辑像素，输入 wall blue",
+      "allowed": 37,
+      "edits": 37,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "floor：涂 37 个可编辑像素，输入 floor blue",
+      "allowed": 37,
+      "edits": 37,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "仅涂 70 个猫毛像素，地毯变蓝、猫变红",
+      "allowed": 29639,
+      "edits": 29639,
+      "rest": 6813,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "改写为地毯变绿、猫变黄；取消猫并保留整张地毯",
+      "allowed": 29569,
+      "edits": 29569,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "只要求地毯变蓝，另轻擦猫毛 60 像素",
+      "allowed": 5000,
+      "edits": 5000,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    },
+    {
+      "scenario": "点名地毯、猫、花瓶，仅勾选地毯",
+      "allowed": 29569,
+      "edits": 29569,
+      "rest": 19690,
+      "leaked": 0,
+      "wrong": 0
+    }
+  ],
+  "project": "E:\\iisprojectnew\\iisproject",
+  "browser": "Edg/158.0.4370.33",
+  "executedAt": "2026-11-24T02:19:14.331Z",
+  "sha256": {
+    "index.html": "89cdeead5e85d62191fd615e70371e2b98102f7a1708a67ca4f11170ff97a92e",
+    "static/app.js": "7c84f3ad23bdb60dff0dc94eefadb54ff4048ddc069da6e6d92eb645b909b6ec",
+    "static/rules.js": "fb10a48f07cd87082557dda9f311c3a4220b5ea5feee6133e6442ca2bef27043",
+    "static/samples.js": "770dee462395dad3f9d0979f73f85f7b5887d4355d2c0d0cdf7af16cc3058458",
+    "static/style.css": "d7d88f19341e61663b1f603193fb8bb4a940199e0bf47223d550ed32c50266ed"
+  }
+}
