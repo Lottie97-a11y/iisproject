@@ -1,6 +1,6 @@
 # Region-locked image editing
 
-Prose word count: 1608 (code and commands not counted)
+Prose word count: 1610 (code and commands not counted)
 
 When people use text prompts to edit part of an AI-generated image, the model can change other parts they wanted to keep. Building on my A1 literature review, this browser prototype lets users lock those areas so the system preserves them. In the current version (V2.1), the user names or paints the objects to edit, chooses for each one whether to change only the painted part or the whole object, checks the highlighted scope, and the system restores every pixel outside it.
 
@@ -62,8 +62,7 @@ python tools/embed_samples.py
 
 ## Additional files
 
-- `README.zh-CN.md`: a guide to V2.1 in Chinese.
 - `samples/room.png`: the sample image, drawn in code by `tools/make_sample.py`.
 - `static/samples.js`: generated copy of `samples/` that the page reads; do not edit by hand.
-- `docs/`: the V1.0 system diagram and storyboards A–C (22 Nov).
+- `docs/`: the V1.0 system diagram and storyboards A–C (22 Nov); `regression-2026-11-24.json`, the 213 browser checks cited in the report. The V2.1 system diagram and storyboards are in the report.
 - No ZIP file.
